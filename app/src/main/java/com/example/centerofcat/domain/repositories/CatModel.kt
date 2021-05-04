@@ -1,9 +1,6 @@
 package com.example.centerofcat.domain.repositories
 
-import com.example.centerofcat.domain.entities.BreedCatInfo
-import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.domain.entities.FavouriteEntity
-import com.example.centerofcat.domain.entities.LoadCat
+import com.example.centerofcat.domain.entities.*
 import io.reactivex.Single
 import java.io.File
 
@@ -22,7 +19,7 @@ interface CatModel {
 
     fun postLoadCat(
         loadCat: LoadCat
-    ):Single<LoadCat>
+    ): Single<LoadCat>
 
     fun getFavouritesCat(
         page: Int,
@@ -34,5 +31,9 @@ interface CatModel {
 
     fun deleteFavouritesCatObject(
         id: String
+    ): Single<CatInfo>
+
+    fun postVoteForCat(
+        voteCat: VoteCat
     ): Single<CatInfo>
 }

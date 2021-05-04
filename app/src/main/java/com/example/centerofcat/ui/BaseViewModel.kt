@@ -9,6 +9,7 @@ import com.example.centerofcat.data.repositories.CatModelImpl
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.domain.entities.FavouriteEntity
 import com.example.centerofcat.domain.entities.LoadCat
+import com.example.centerofcat.domain.entities.VoteCat
 import com.example.centerofcat.domain.repositories.CatModel
 import com.example.centerofcat.ui.adapters.CatPositionDataSource
 import com.example.centerofcat.ui.adapters.MainThreadExecutor
@@ -34,13 +35,13 @@ abstract class BaseViewModel : ViewModel() {
     val viewStateLiveData: MutableLiveData<ViewState> = MutableLiveData()
 
     fun makeChange(): PagedList<CatInfo> {
-        val dataSource: CatPositionDataSource =
+        val dataSource =
             CatPositionDataSource(this)
         val config: PagedList.Config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
             .setPageSize(10)
             .setInitialLoadSizeHint(10)
-            .build();
+            .build()
 
         val pagedList: PagedList<CatInfo> = PagedList.Builder(dataSource, config)
             .setNotifyExecutor(MainThreadExecutor())
@@ -53,7 +54,7 @@ abstract class BaseViewModel : ViewModel() {
 
 
     init {
-
+        
         catListInfo.value = makeChange()
     }
 
@@ -89,6 +90,23 @@ abstract class BaseViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
 
                 Log.i("kpop", "proizoshel POST")
+            }, {
+                Log.i("kpop", it.toString())
+            })
+        compositeDisposable.add(disposable)
+    }
+
+
+    fun makeVoteForTheCat(id: String,value:Int) {
+        val voteCat = VoteCat(image_id = id, value = value)
+        val disposable = catModelImpl.postVoteForCat(voteCat = voteCat).subscribeOn(
+            Schedulers.io()
+        )
+            .observeOn(AndroidSchedulers.mainThread()).subscribe({
+                if (voteCat.value==1)
+                Log.i("kpop", "proizoshel Like")
+                else
+                Log.i("kpop", "proizoshel DisLike")
             }, {
                 Log.i("kpop", it.toString())
             })

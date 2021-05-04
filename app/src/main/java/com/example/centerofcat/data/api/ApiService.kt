@@ -1,9 +1,6 @@
 package com.example.centerofcat.data.api
 
-import com.example.centerofcat.domain.entities.BreedCatInfo
-import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.domain.entities.FavouriteEntity
-import com.example.centerofcat.domain.entities.LoadCat
+import com.example.centerofcat.domain.entities.*
 
 import io.reactivex.Single
 import retrofit2.http.*
@@ -23,7 +20,6 @@ interface ApiService {
     @GET (value = "v1/breeds")
     fun getBreedsCat(
         @Query ("api_key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
-
     ):Single<List<BreedCatInfo>>
 
 
@@ -49,6 +45,16 @@ interface ApiService {
         @Header ("x-api-key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
         @Body params: LoadCat
     ):Single<LoadCat>
+
+
+    @POST(value = "v1/votes")
+    fun postVoteAboutCat(
+        @Header ("x-api-key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
+        @Body params: VoteCat
+    ):Single<CatInfo>
+
+
+
 
 
 

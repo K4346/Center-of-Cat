@@ -3,4 +3,7 @@
     <string name="title_cats">Котики</string>
     <string name="title_favorites">Избранное</string>
     <string name="title_load">Загрузить Котиков</string>
+    <string name="DetailContentDescription">Главное Изображение с Котом</string>
+    <string name="like">Like</string>
+    <string name="dislike">Dislike</string>
 </resources>

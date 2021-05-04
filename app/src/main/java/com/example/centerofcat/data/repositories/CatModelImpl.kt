@@ -1,10 +1,7 @@
 package com.example.centerofcat.data.repositories
 
 import com.example.centerofcat.di.App
-import com.example.centerofcat.domain.entities.BreedCatInfo
-import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.domain.entities.FavouriteEntity
-import com.example.centerofcat.domain.entities.LoadCat
+import com.example.centerofcat.domain.entities.*
 import com.example.centerofcat.domain.repositories.CatModel
 import io.reactivex.Single
 import java.io.File
@@ -45,6 +42,11 @@ class CatModelImpl: CatModel {
     override fun deleteFavouritesCatObject(id: String): Single<CatInfo> {
         val apiService= App.component.provideApi()
         return apiService.deleteFavouritesCat(id = id)
+    }
+
+    override fun postVoteForCat(voteCat: VoteCat): Single<CatInfo> {
+        val apiService= App.component.provideApi()
+        return apiService.postVoteAboutCat(params = voteCat)
     }
 
     fun g(){

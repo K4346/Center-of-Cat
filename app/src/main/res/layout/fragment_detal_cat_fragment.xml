@@ -2,8 +2,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detail_fragment"
+    android:layout_marginTop="?attr/actionBarSize"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
@@ -27,9 +27,10 @@
             app:expandedTitleMarginEnd="64dp"
             >
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/detail_photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:contentDescription="@string/DetailContentDescription"
                 android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -56,6 +57,8 @@
         >
 
         <TextView
+            android:layout_marginTop="12dp"
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
@@ -66,13 +69,24 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/like"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:contentDescription="@string/like"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:src="@drawable/ic_baseline_favorite_24"
+        android:src="@drawable/outline_thumb_up_24"
         app:layout_anchor="@id/main.appbar"
         app:layout_anchorGravity="bottom|right|end"
         />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/dislike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/dislike"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/outline_thumb_down_24"
+        app:layout_anchor="@+id/main.appbar"
+        app:layout_anchorGravity="bottom|start|bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

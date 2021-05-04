@@ -3,14 +3,14 @@ package com.example.centerofcat.ui.detailCatInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import com.example.centerofcat.MainActivity
+import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.centerofcat.databinding.FragmentDetalCatFragmentBinding
+import com.example.centerofcat.ui.catList.CatsListViewModel
 
 class DetailCatInfoFragment : Fragment() {
     private lateinit var binding: FragmentDetalCatFragmentBinding
@@ -26,12 +26,26 @@ class DetailCatInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val catsListViewModel =
+            ViewModelProvider(this).get(CatsListViewModel::class.java)
+
+        val detailInformation = requireArguments().getStringArrayList("infoAboutCat")
+        Log.i("kpop", detailInformation.toString())
+
+        Glide.with(binding.root.context).load(detailInformation?.get(0)).centerCrop()
+            .into(binding.detailPhoto)
+        binding.mainToolbar.title="asdddddddd"
 
 
-
+        binding.like.setOnClickListener {
+            detailInformation?.get(1)?.let { it1 -> catsListViewModel.makeVoteForTheCat(it1, 1) }
+            Toast.makeText(binding.root.context, "Like", Toast.LENGTH_SHORT / 2).show()
+        }
+        binding.dislike.setOnClickListener {
+            detailInformation?.get(1)?.let { it1 -> catsListViewModel.makeVoteForTheCat(it1, 0) }
+            Toast.makeText(binding.root.context, "Dislike", Toast.LENGTH_SHORT / 2).show()
+        }
     }
-
-
 
 
 }
