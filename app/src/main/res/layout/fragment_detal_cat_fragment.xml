@@ -57,6 +57,7 @@
         >
 
         <TextView
+            android:id="@+id/description"
             android:layout_marginTop="12dp"
             android:gravity="center"
             android:layout_width="match_parent"
@@ -75,6 +76,7 @@
         android:contentDescription="@string/like"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:src="@drawable/outline_thumb_up_24"
+        android:backgroundTint="@color/orange_700"
         app:layout_anchor="@id/main.appbar"
         app:layout_anchorGravity="bottom|right|end"
         />
@@ -86,6 +88,7 @@
         android:contentDescription="@string/dislike"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:src="@drawable/outline_thumb_down_24"
+        android:backgroundTint="@color/orange_700"
         app:layout_anchor="@+id/main.appbar"
         app:layout_anchorGravity="bottom|start|bottom" />
 

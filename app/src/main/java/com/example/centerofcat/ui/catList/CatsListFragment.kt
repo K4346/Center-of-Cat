@@ -54,11 +54,23 @@ class CatsListFragment : Fragment() {
 
         val adapter = CatListAdapter(catDiffUtilCallback)
 
+        setOnClicksListeners(adapter)
+
+
+        binding.rvCatList.adapter = adapter
+        catsListViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+        })
+
+//        return root
+    }
+
+    private  fun setOnClicksListeners(adapter: CatListAdapter){
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
                 val idToDetail = Bundle()
-                val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, catInfo.createdAt)
-                Log.i("kpop", catInfo.url + catInfo.id + catInfo.createdAt)
+                val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, "")
+                Log.i("kpop", catInfo.url + catInfo.id + catInfo.created_at)
                 idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
                 idToDetail.putString("i", "infoAboutasssssssCat")
 //                Toast.makeText(requireContext(), catInfo.id, Toast.LENGTH_SHORT).show()
@@ -67,7 +79,7 @@ class CatsListFragment : Fragment() {
             }
 
             override fun onCatLongClick(catInfo: CatInfo) {
-                val dialog = CatDialog(catInfo, catsListViewModel)
+                val dialog = CatDialog(catInfo, catsListViewModel,1)
                 activity?.supportFragmentManager.let {
                     if (it != null) {
                         dialog.show(it, "dialog")
@@ -78,13 +90,6 @@ class CatsListFragment : Fragment() {
             }
 
         }
-
-        binding.rvCatList.adapter = adapter
-        catsListViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it) // the magic!
-        })
-
-//        return root
     }
 
     private fun addFilters() {

@@ -17,13 +17,20 @@ interface ApiService {
         @Query ("category_ids") category:String
     ):Single<List<CatInfo>>
 
+
+    @GET (value = "v1/images/upload")
+    fun getLoadsCat(
+        @Header ("x-api-key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
+        @Query ("limit") limit:Int=10,
+        @Query ("page") page:Int
+    ):Single<List<CatInfo>>
+
+
+
     @GET (value = "v1/breeds")
     fun getBreedsCat(
         @Query ("api_key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
     ):Single<List<BreedCatInfo>>
-
-
-
 
 
     @GET(value = "v1/favourites")
@@ -54,16 +61,17 @@ interface ApiService {
     ):Single<CatInfo>
 
 
-
-
-
-
     @DELETE(value = "v1/favourites/{favourite_id}/")
     fun deleteFavouritesCat(
         @Header ("x-api-key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
         @Path ("favourite_id") id: String
     ):Single<CatInfo>
 
+    @DELETE(value = "v1/favourites/{image_id}/")
+    fun deleteLoadsCat(
+        @Header ("x-api-key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
+        @Path ("image_id") id: String
+    ):Single<CatInfo>
 
 
 }

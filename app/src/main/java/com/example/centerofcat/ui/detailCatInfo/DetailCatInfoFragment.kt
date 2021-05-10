@@ -29,12 +29,19 @@ class DetailCatInfoFragment : Fragment() {
         val catsListViewModel =
             ViewModelProvider(this).get(CatsListViewModel::class.java)
 
+       setInfoAboutCat(catsListViewModel)
+    }
+
+
+    private fun setInfoAboutCat(catsListViewModel:CatsListViewModel){
         val detailInformation = requireArguments().getStringArrayList("infoAboutCat")
         Log.i("kpop", detailInformation.toString())
 
         Glide.with(binding.root.context).load(detailInformation?.get(0)).centerCrop()
             .into(binding.detailPhoto)
         binding.mainToolbar.title="asdddddddd"
+        binding.mainToolbar.title=detailInformation?.get(1)
+        detailInformation?.let { binding.description.text=binding.description.text.toString()+"\n"+ it[2] }
 
 
         binding.like.setOnClickListener {
@@ -46,6 +53,4 @@ class DetailCatInfoFragment : Fragment() {
             Toast.makeText(binding.root.context, "Dislike", Toast.LENGTH_SHORT / 2).show()
         }
     }
-
-
 }

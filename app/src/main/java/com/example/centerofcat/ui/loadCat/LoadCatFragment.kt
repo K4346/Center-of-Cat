@@ -1,24 +1,33 @@
 package com.example.centerofcat.ui.loadCat
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.example.centerofcat.databinding.FragmentLoadBinding
+import com.example.centerofcat.domain.entities.CatInfo
+import com.example.centerofcat.ui.CatDialog
+import com.example.centerofcat.ui.adapters.CatListAdapter
 import java.io.File
 
 
 class LoadCatFragment : Fragment() {
-    var uriCat: Uri? = null
 
+    var uriCat: Uri? = null
+    private val catDiffUtilCallback = com.example.centerofcat.ui.adapters.CatDiffUtilCallback()
     private lateinit var loadCatViewModel: LoadCatViewModel
     private lateinit var binding: FragmentLoadBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,20 +46,44 @@ class LoadCatFragment : Fragment() {
 
 
         binding.button.setOnClickListener {
-
-            val photoPickerIntent = Intent(Intent.ACTION_PICK)
-            //Тип получаемых объектов - image:
-            //Тип получаемых объектов - image:
-            photoPickerIntent.type = "image/*"
-            //Запускаем переход с ожиданием обратного результата в виде информации об изображении:
-            //Запускаем переход с ожиданием обратного результата в виде информации об изображении:
             openGalleryForImage()
-
-
         }
+
+        val adapter = CatListAdapter(catDiffUtilCallback)
+
+
+        val layoutManager = GridLayoutManager(context, 2)
+        binding.rvCatLoadList.layoutManager = layoutManager
+
+//        adapter.submitList(pagedList)
+        binding.rvCatLoadList.adapter = adapter
+
+
+        loadCatViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+        })
 
 
     }
+private fun setOnClicksListener(adapter: CatListAdapter){
+    adapter.onCatClickListener=object: CatListAdapter.OnCatClickListener{
+        override fun onCatClick(catInfo: CatInfo) {
+Log.i("kpop",catInfo.id)
+        }
+
+        override fun onCatLongClick(catInfo: CatInfo) {
+            val dialog = CatDialog(catInfo,loadCatViewModel,3)
+            activity?.supportFragmentManager.let {
+                if (it != null) {
+                    dialog.show(it, "dialog")
+                }
+            }
+        }
+
+    }
+
+}
+
 
     private fun openGalleryForImage() {
         val intent = Intent(Intent.ACTION_PICK)
@@ -67,7 +100,7 @@ class LoadCatFragment : Fragment() {
             uriCat = data?.data
             val file = File(uriCat?.path)
 //            loadCatViewModel.postLoadCat(file)
-
+// ремонтируется
         }
 
 

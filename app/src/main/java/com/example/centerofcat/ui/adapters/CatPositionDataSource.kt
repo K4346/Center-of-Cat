@@ -12,7 +12,7 @@ class CatPositionDataSource(private val viewModel: BaseViewModel) :
     override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<CatInfo>) {
         p = 0
         viewModel.loadCats(page = 0) {
-            callback.onResult(it, 0)            // Вызывается несколько раз
+            callback.onResult(it, p)            // Вызывается несколько раз
         }
 
 
@@ -22,6 +22,7 @@ class CatPositionDataSource(private val viewModel: BaseViewModel) :
     override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
         p += 1
         viewModel.loadCats(page = p) {
+
             callback.onResult(it)
         }
         Log.i("kpop", "inLoadRange" + viewModel.catList.toString())

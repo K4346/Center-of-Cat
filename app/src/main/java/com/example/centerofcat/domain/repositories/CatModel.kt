@@ -14,6 +14,10 @@ interface CatModel {
     ): Single<List<CatInfo>>
 
 
+    fun getLoadsCatObject(
+        page: Int
+    ): Single<List<CatInfo>>
+
     fun getBreedsCatObject(
     ): Single<List<BreedCatInfo>>
 
@@ -30,6 +34,10 @@ interface CatModel {
     ): Single<CatInfo>
 
     fun deleteFavouritesCatObject(
+        id: String
+    ): Single<CatInfo>
+
+    fun deleteLoadsCatObject(
         id: String
     ): Single<CatInfo>
 

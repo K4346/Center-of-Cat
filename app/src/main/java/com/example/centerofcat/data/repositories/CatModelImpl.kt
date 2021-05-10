@@ -17,6 +17,11 @@ class CatModelImpl: CatModel {
         return apiService.getCat(page = page,order = order,breed = breed_ids,category = category)
     }
 
+    override fun getLoadsCatObject(page: Int): Single<List<CatInfo>> {
+        val apiService= App.component.provideApi()
+        return apiService.getLoadsCat(page = page)
+    }
+
     override fun getBreedsCatObject(): Single<List<BreedCatInfo>> {
         val apiService= App.component.provideApi()
         return apiService.getBreedsCat()
@@ -44,11 +49,14 @@ class CatModelImpl: CatModel {
         return apiService.deleteFavouritesCat(id = id)
     }
 
+    override fun deleteLoadsCatObject(id: String): Single<CatInfo> {
+        val apiService= App.component.provideApi()
+        return apiService.deleteLoadsCat(id = id)
+    }
+
     override fun postVoteForCat(voteCat: VoteCat): Single<CatInfo> {
         val apiService= App.component.provideApi()
         return apiService.postVoteAboutCat(params = voteCat)
     }
 
-    fun g(){
-
-}}
+}

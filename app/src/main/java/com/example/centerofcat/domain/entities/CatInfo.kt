@@ -33,8 +33,8 @@ data class CatInfo (
     @Json(name = "imageId")
     val imageId:String?=null,
 
-    @Json(name = "createdAt")
-    val createdAt:String="",
+    @Json(name = "created_at")    //Должен быть только у favorites
+    val created_at:String="",
 
     @Json(name = "image")
     val image:ImageCatInfo?=null

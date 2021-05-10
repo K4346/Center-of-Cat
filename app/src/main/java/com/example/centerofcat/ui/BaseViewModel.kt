@@ -51,10 +51,8 @@ abstract class BaseViewModel : ViewModel() {
     }
 
 
-
-
     init {
-        
+
         catListInfo.value = makeChange()
     }
 
@@ -68,8 +66,8 @@ abstract class BaseViewModel : ViewModel() {
     )
 
 
-    fun postLoadCat(file: File){
-        val loadCat=LoadCat(file)
+    fun postLoadCat(file: File) {
+        val loadCat = LoadCat(file)
         val disposable = catModelImpl.postLoadCat(loadCat).subscribeOn(
             Schedulers.io()
         )
@@ -97,16 +95,16 @@ abstract class BaseViewModel : ViewModel() {
     }
 
 
-    fun makeVoteForTheCat(id: String,value:Int) {
+    fun makeVoteForTheCat(id: String, value: Int) {
         val voteCat = VoteCat(image_id = id, value = value)
         val disposable = catModelImpl.postVoteForCat(voteCat = voteCat).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-                if (voteCat.value==1)
-                Log.i("kpop", "proizoshel Like")
+                if (voteCat.value == 1)
+                    Log.i("kpop", "proizoshel Like")
                 else
-                Log.i("kpop", "proizoshel DisLike")
+                    Log.i("kpop", "proizoshel DisLike")
             }, {
                 Log.i("kpop", it.toString())
             })
@@ -116,6 +114,23 @@ abstract class BaseViewModel : ViewModel() {
     fun deleteCatInFavourites(id: String) {
         Log.i("kpop", id)
         val disposable = catModelImpl.deleteFavouritesCatObject(id).subscribeOn(
+            Schedulers.io()
+        )
+            .observeOn(AndroidSchedulers.mainThread()).subscribe({
+
+                catListInfo.value = makeChange()
+                Log.i("kpop", "proizoshel DELETE")
+            }, {
+                Log.i("kpop", it.toString())
+            })
+        compositeDisposable.add(disposable)
+
+    }
+
+
+    fun deleteCatInLoads(id: String) {
+        Log.i("kpop", "delete load $id")
+        val disposable = catModelImpl.deleteLoadsCatObject(id).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
@@ -140,7 +155,6 @@ abstract class BaseViewModel : ViewModel() {
         data class Update(val yourData: List<CatInfo>) : ViewState()
         object EmptyState : ViewState()
     }
-
 
 
 }
