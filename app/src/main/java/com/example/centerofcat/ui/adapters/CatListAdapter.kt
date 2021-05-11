@@ -1,18 +1,14 @@
 package com.example.centerofcat.ui.adapters
 
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.GlideContext
 import com.example.centerofcat.databinding.ImageItemBinding
 import com.example.centerofcat.domain.entities.CatInfo
-import com.squareup.picasso.Picasso
 
 
 class CatListAdapter(private val callback: CatDiffUtilCallback) :
@@ -20,9 +16,10 @@ class CatListAdapter(private val callback: CatDiffUtilCallback) :
 
     var onCatClickListener: OnCatClickListener? = null
 
-    inner class CatListHolder(val binding: ImageItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CatListHolder(val binding: ImageItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         val image = binding.imageView
-        fun bind(){
+        fun bind() {
 
             if (getItem(adapterPosition)?.image == null) {
 //            Picasso.get().load(getItem(position)?.url).fit().into(holder.image)
@@ -57,8 +54,10 @@ class CatListAdapter(private val callback: CatDiffUtilCallback) :
             getItem(position)?.let { it1 -> onCatClickListener?.onCatClick(it1) }
         }
         holder.itemView.setOnLongClickListener() {
-            getItem(position)?.let { it1 -> onCatClickListener?.onCatLongClick(it1)
-                true} == true
+            getItem(position)?.let { it1 ->
+                onCatClickListener?.onCatLongClick(it1)
+                true
+            } == true
         }
         Log.i("kpop", "cool Joker")
     }

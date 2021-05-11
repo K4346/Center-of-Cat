@@ -1,8 +1,10 @@
 package com.example.centerofcat.data.api
 
 import com.example.centerofcat.domain.entities.*
+import com.example.centerofcat.domain.entities.analysis.AnalysisCat
 
 import io.reactivex.Single
+import okhttp3.RequestBody
 import retrofit2.http.*
 import java.io.File
 
@@ -24,6 +26,12 @@ interface ApiService {
         @Query ("limit") limit:Int=10,
         @Query ("page") page:Int
     ):Single<List<CatInfo>>
+
+    @GET (value = "v1/images/{image_id}/analysis")
+    fun getAnalysisAboutLoadCat(
+        @Header ("x-api-key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
+        @Query ("image_id") imageId:String,
+    ):Single<List<AnalysisCat>>
 
 
 
@@ -47,10 +55,11 @@ interface ApiService {
         @Body params: FavouriteEntity
     ):Single<CatInfo>
 
+    @Multipart
     @POST(value = "v1/favourites")
     fun postLoadCat(
         @Header ("x-api-key") apiKey:String="2d63512c-1c5f-496b-8250-71b91514da66",
-        @Body params: LoadCat
+        @Body file: File
     ):Single<LoadCat>
 
 

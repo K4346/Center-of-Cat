@@ -2,6 +2,7 @@ package com.example.centerofcat.data.repositories
 
 import com.example.centerofcat.di.App
 import com.example.centerofcat.domain.entities.*
+import com.example.centerofcat.domain.entities.analysis.AnalysisCat
 import com.example.centerofcat.domain.repositories.CatModel
 import io.reactivex.Single
 import java.io.File
@@ -29,7 +30,7 @@ class CatModelImpl: CatModel {
 
     override fun postLoadCat(loadCat: LoadCat): Single<LoadCat> {
         val apiService= App.component.provideApi()
-        return apiService.postLoadCat(params = loadCat)
+        return apiService.postLoadCat(file = loadCat.file)
     }
 
 
@@ -58,5 +59,11 @@ class CatModelImpl: CatModel {
         val apiService= App.component.provideApi()
         return apiService.postVoteAboutCat(params = voteCat)
     }
+
+    override fun getAnalysisAboutLoadCatObject(id: String): Single<List<AnalysisCat>> {
+        val apiService= App.component.provideApi()
+        return apiService.getAnalysisAboutLoadCat(imageId = id)
+    }
+
 
 }

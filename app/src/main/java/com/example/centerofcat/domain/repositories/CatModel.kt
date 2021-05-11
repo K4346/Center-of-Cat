@@ -1,8 +1,8 @@
 package com.example.centerofcat.domain.repositories
 
 import com.example.centerofcat.domain.entities.*
+import com.example.centerofcat.domain.entities.analysis.AnalysisCat
 import io.reactivex.Single
-import java.io.File
 
 interface CatModel {
 
@@ -44,4 +44,8 @@ interface CatModel {
     fun postVoteForCat(
         voteCat: VoteCat
     ): Single<CatInfo>
+
+    fun getAnalysisAboutLoadCatObject(
+        id: String
+    ): Single<List<AnalysisCat>>
 }

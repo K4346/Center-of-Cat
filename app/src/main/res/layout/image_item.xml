@@ -11,14 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/gray">
-        <ImageButton
-            android:id="@+id/likeButton"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/imageView"
-            app:srcCompat="@drawable/ic_baseline_favorite_24" />
 
         <ImageView
             android:id="@+id/imageView"

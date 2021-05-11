@@ -12,8 +12,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.example.centerofcat.R
 import com.example.centerofcat.databinding.FragmentLoadBinding
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.ui.CatDialog
@@ -65,24 +67,38 @@ class LoadCatFragment : Fragment() {
 
 
     }
-private fun setOnClicksListener(adapter: CatListAdapter){
-    adapter.onCatClickListener=object: CatListAdapter.OnCatClickListener{
-        override fun onCatClick(catInfo: CatInfo) {
-Log.i("kpop",catInfo.id)
-        }
 
-        override fun onCatLongClick(catInfo: CatInfo) {
-            val dialog = CatDialog(catInfo,loadCatViewModel,3)
-            activity?.supportFragmentManager.let {
-                if (it != null) {
-                    dialog.show(it, "dialog")
+    private fun setOnClicksListener(adapter: CatListAdapter) {
+        adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
+            override fun onCatClick(catInfo: CatInfo) {
+                Log.i("kpop", catInfo.id)
+                loadCatViewModel.analysisCat(catInfo.id) {
+
+                    val analysisToDetail = Bundle()
+                    val infoAboutAnalysis = arrayListOf<String>()
+                    Log.i("kpop", it.toString())
+                    it[0].labels?.forEach{
+                        infoAboutAnalysis.add(it.name + " С уверенностью в " + it.confidence + "%")
+                    }
+                    analysisToDetail.putStringArrayList("infoAnalysis", infoAboutAnalysis)
+                    findNavController().navigate(R.id.navigation_detail, analysisToDetail)
+
+                }
+
+            }
+
+            override fun onCatLongClick(catInfo: CatInfo) {
+                val dialog = CatDialog(catInfo, loadCatViewModel, 3)
+                activity?.supportFragmentManager.let {
+                    if (it != null) {
+                        dialog.show(it, "dialog")
+                    }
                 }
             }
+
         }
 
     }
-
-}
 
 
     private fun openGalleryForImage() {
