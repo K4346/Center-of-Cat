@@ -16,13 +16,13 @@ import com.example.centerofcat.ui.adapters.MainThreadExecutor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 abstract class BaseViewModel : ViewModel() {
-
-
     val compositeDisposable: CompositeDisposable = CompositeDisposable()
     val catModelImpl: CatModel = CatModelImpl()
 
@@ -31,8 +31,6 @@ abstract class BaseViewModel : ViewModel() {
     var breedChoose: String = ""
     var orderr: String = ""
     var categoryy: String = ""
-
-    val viewStateLiveData: MutableLiveData<ViewState> = MutableLiveData()
 
     fun makeChange(): PagedList<CatInfo> {
         val dataSource =
@@ -52,7 +50,6 @@ abstract class BaseViewModel : ViewModel() {
 
 
     init {
-
         catListInfo.value = makeChange()
     }
 
@@ -65,20 +62,6 @@ abstract class BaseViewModel : ViewModel() {
         onComplete: ((List<CatInfo>) -> Unit)
     )
 
-
-    fun postLoadCat(file: File) {
-        val loadCat = LoadCat(file)
-        val disposable = catModelImpl.postLoadCat(loadCat).subscribeOn(
-            Schedulers.io()
-        )
-            .observeOn(AndroidSchedulers.mainThread()).subscribe({
-                Log.i("kpop", "proizoshel POST CAT")
-            }, {
-                Log.i("kpop", it.toString())
-            })
-        compositeDisposable.add(disposable)
-
-    }
 
     fun addCatInFavourites(id: String) {
         val favouriteEntity = FavouriteEntity(image_id = id)
@@ -95,33 +78,16 @@ abstract class BaseViewModel : ViewModel() {
     }
 
 
-    fun makeVoteForTheCat(id: String, value: Int) {
-        val voteCat = VoteCat(image_id = id, value = value)
-        val disposable = catModelImpl.postVoteForCat(voteCat = voteCat).subscribeOn(
-            Schedulers.io()
-        )
-            .observeOn(AndroidSchedulers.mainThread()).subscribe({
-                if (voteCat.value == 1)
-                    Log.i("kpop", "proizoshel Like")
-                else
-                    Log.i("kpop", "proizoshel DisLike")
-            }, {
-                Log.i("kpop", it.toString())
-            })
-        compositeDisposable.add(disposable)
-    }
-
     fun deleteCatInFavourites(id: String) {
         Log.i("kpop", id)
         val disposable = catModelImpl.deleteFavouritesCatObject(id).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-
                 catListInfo.value = makeChange()
                 Log.i("kpop", "proizoshel DELETE")
             }, {
-                Log.i("kpop", it.toString())
+                Log.i("kpop2", it.toString())
             })
         compositeDisposable.add(disposable)
 
@@ -136,9 +102,8 @@ abstract class BaseViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
 
                 catListInfo.value = makeChange()
-                Log.i("kpop", "proizoshel DELETE")
             }, {
-                Log.i("kpop", it.toString())
+                catListInfo.value = makeChange()
             })
         compositeDisposable.add(disposable)
 
@@ -150,11 +115,6 @@ abstract class BaseViewModel : ViewModel() {
         compositeDisposable.dispose()
     }
 
-    sealed class ViewState {
-        data class ErrorState(val error: Throwable) : ViewState()
-        data class Update(val yourData: List<CatInfo>) : ViewState()
-        object EmptyState : ViewState()
-    }
 
 
 }

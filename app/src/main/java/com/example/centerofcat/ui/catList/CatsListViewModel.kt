@@ -27,25 +27,15 @@ class CatsListViewModel : BaseViewModel() {
         )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-
             .subscribe({
                 catList.addAll(it)
-//                catListInfo.value = pagedList
                 onComplete.invoke(it)
             }, {
                 Log.i("kpop", it.toString())
-
             }
             )
-
-
         compositeDisposable.add(disposable)
     }
-// Не помню зачем это
-//    init {
-//
-//        loadBreedsCats { allArray.addAll(it) }
-//    }
 
     fun loadBreedsCats(
         onComplete: ((ArrayList<ArrayList<String>>) -> Unit)
@@ -56,7 +46,6 @@ class CatsListViewModel : BaseViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
 
             .subscribe({
-
                 it.forEach {
                     it.name?.let { it1 -> nameArray.add(it1) }
                     it.id?.let { it1 -> idArray.add(it1) }
@@ -66,13 +55,8 @@ class CatsListViewModel : BaseViewModel() {
 //                catListInfo.value = pagedList
                 onComplete.invoke(allArray)
             }, {
-                Log.i("kpop", it.toString())
-
             }
             )
-
-
         compositeDisposable.add(disposable)
     }
-
 }

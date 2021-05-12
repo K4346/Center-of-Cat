@@ -47,11 +47,7 @@ class FavouritesCatsFragment : Fragment() {
 
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatFavouritesList.layoutManager = layoutManager
-
-//        adapter.submitList(pagedList)
         binding.rvCatFavouritesList.adapter = adapter
-
-
         catsFavouritesCatsViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
@@ -63,14 +59,10 @@ class FavouritesCatsFragment : Fragment() {
     private fun setOnClicksListeners(adapter: CatListAdapter) {
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
-                Toast.makeText(requireContext(), catInfo.id, Toast.LENGTH_SHORT).show()
-                 val idToDetail = Bundle()
+                val idToDetail = Bundle()
                 val infoAboutCat = arrayListOf<String>(catInfo.image?.url.toString(), catInfo.image?.id.toString(), catInfo.created_at)
                 Log.i("kpopp", catInfo.image?.url + catInfo.image?.id + catInfo.created_at)
                 idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-                idToDetail.putString("i", "infoAboutasssssssCat")
-//                Log.i("kpop", infoAboutCat.toString())
-//                Toast.makeText(requireContext(), catInfo.id, Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.navigation_detail, idToDetail)
             }
 
@@ -80,8 +72,6 @@ class FavouritesCatsFragment : Fragment() {
                     if (it != null) {
                         dialog.show(it, "dialog")
                     }
-
-//                    binding.rvCatFavouritesList.adapter = adapter
                 }
             }
         }

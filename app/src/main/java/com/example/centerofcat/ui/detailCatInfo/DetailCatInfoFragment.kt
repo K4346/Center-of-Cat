@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.centerofcat.databinding.FragmentDetalCatFragmentBinding
-import com.example.centerofcat.ui.catList.CatsListViewModel
 
 class DetailCatInfoFragment() : Fragment() {
 
@@ -27,39 +26,31 @@ class DetailCatInfoFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val catsListViewModel =
-            ViewModelProvider(this).get(CatsListViewModel::class.java)
-
-        setInfoAboutCat(catsListViewModel)
-
+        val detailViewModel =
+            ViewModelProvider(this).get(DetailViewModel::class.java)
+        setInfoAboutCat(detailViewModel)
         setAnalysis()
 
     }
 
-
-    private fun setInfoAboutCat(catsListViewModel: CatsListViewModel) {
+    private fun setInfoAboutCat(detailViewModel: DetailViewModel) {
         val detailInformation = requireArguments().getStringArrayList("infoAboutCat")
         Log.i("kpop", detailInformation.toString())
-
         Glide.with(binding.root.context).load(detailInformation?.get(0)).centerCrop()
             .into(binding.detailPhoto)
-        binding.mainToolbar.title = "asdddddddd"
         binding.mainToolbar.title = detailInformation?.get(1)
         detailInformation?.let {
             binding.description.text = binding.description.text.toString() + "\n" + it[2]
         }
-
-
         binding.like.setOnClickListener {
-            detailInformation?.get(1)?.let { it1 -> catsListViewModel.makeVoteForTheCat(it1, 1) }
+            detailInformation?.get(1)?.let { it1 -> detailViewModel.makeVoteForTheCat(it1, 1) }
             Toast.makeText(binding.root.context, "Like", Toast.LENGTH_SHORT / 2).show()
         }
         binding.dislike.setOnClickListener {
-            detailInformation?.get(1)?.let { it1 -> catsListViewModel.makeVoteForTheCat(it1, 0) }
+            detailInformation?.get(1)?.let { it1 -> detailViewModel.makeVoteForTheCat(it1, 0) }
             Toast.makeText(binding.root.context, "Dislike", Toast.LENGTH_SHORT / 2).show()
         }
     }
-
 
     private fun setAnalysis() {
         val analysisOfCat = requireArguments().getStringArrayList("infoAnalysis")
@@ -71,7 +62,5 @@ class DetailCatInfoFragment() : Fragment() {
                     binding.description.text.toString() + "\n" + it
             }
         }
-
-
     }
 }

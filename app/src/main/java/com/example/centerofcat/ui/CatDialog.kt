@@ -43,8 +43,6 @@ class CatDialog(
                             }
                         }
                     else Toast.makeText(activity, "МЯУ", Toast.LENGTH_SHORT).show()
-
-
                 }
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")

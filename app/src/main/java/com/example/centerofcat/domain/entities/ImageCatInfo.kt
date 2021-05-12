@@ -4,14 +4,14 @@ import com.squareup.moshi.Json
 
 data class ImageCatInfo (
     @Json(name = "id")
-    var id: String? = null,
+    val id: String? = null,
 
     @Json(name = "width")
-    var width: Int? = null,
+    val width: Int? = null,
 
     @Json(name = "height")
-    var height: Int? = null,
+    val height: Int? = null,
 
     @Json(name = "url")
-    var url: String? = null
+    val url: String? = null
 )

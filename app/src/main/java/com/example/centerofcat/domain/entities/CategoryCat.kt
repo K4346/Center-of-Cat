@@ -4,8 +4,8 @@ import com.squareup.moshi.Json
 
 data class CategoryCat(
     @Json(name = "id")
-    var id: Int? = null,
+    val id: Int? = null,
 
     @Json(name = "name")
-    var name: String? = null
+    val name: String? = null
 )

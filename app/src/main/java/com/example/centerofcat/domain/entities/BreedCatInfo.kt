@@ -4,73 +4,73 @@ import com.squareup.moshi.Json
 
 data class BreedCatInfo(
     @Json(name = "weight")
-    var weight: WeightCatInfo? = null,
+    val weight: WeightCatInfo? = null,
 
     @Json(name = "id")
-    var id: String? = null,
+    val id: String? = null,
 
     @Json(name = "name")
-    var name: String? = null,
+    val name: String? = null,
 
     @Json(name = "cfa_url")
-    var cfaUrl: String? = null,
+    val cfaUrl: String? = null,
 
     @Json(name = "vetstreet_url")
-    var vetstreetUrl: String? = null,
+    val vetstreetUrl: String? = null,
 
     @Json(name = "vcahospitals_url")
-    var vcahospitalsUrl: String? = null,
+    val vcahospitalsUrl: String? = null,
 
     @Json(name = "temperament")
-    var temperament: String? = null,
+    val temperament: String? = null,
 
     @Json(name = "origin")
-    var origin: String? = null,
+    val origin: String? = null,
 
     @Json(name = "country_codes")
-    var countryCodes: String? = null,
+    val countryCodes: String? = null,
 
     @Json(name = "country_code")
-    var countryCode: String? = null,
+    val countryCode: String? = null,
 
     @Json(name = "description")
-    var description: String? = null,
+    val description: String? = null,
 
     @Json(name = "life_span")
-    var lifeSpan: String? = null,
+    val lifeSpan: String? = null,
 
     @Json(name = "indoor")
-    var indoor: Int? = null,
+    val indoor: Int? = null,
 
     @Json(name = "lap")
-    var lap: Int? = null,
+    val lap: Int? = null,
 
     @Json(name = "alt_names")
-    var altNames: String? = null,
+    val altNames: String? = null,
 
     @Json(name = "adaptability")
-    var adaptability: Int? = null,
+    val adaptability: Int? = null,
 
     @Json(name = "affection_level")
-    var affectionLevel: Int? = null,
+    val affectionLevel: Int? = null,
 
     @Json(name = "child_friendly")
-    var childFriendly: Int? = null,
+    val childFriendly: Int? = null,
 
     @Json(name = "dog_friendly")
-    var dogFriendly: Int? = null,
+    val dogFriendly: Int? = null,
 
     @Json(name = "energy_level")
-    var energyLevel: Int? = null,
+    val energyLevel: Int? = null,
 
     @Json(name = "grooming")
-    var grooming: Int? = null,
+    val grooming: Int? = null,
 
     @Json(name = "health_issues")
-    var healthIssues: Int? = null,
+    val healthIssues: Int? = null,
 
     @Json(name = "intelligence")
-    var intelligence: Int? = null,
+    val intelligence: Int? = null,
 
     @Json(name = "shedding_level")
     var sheddingLevel: Int? = null,

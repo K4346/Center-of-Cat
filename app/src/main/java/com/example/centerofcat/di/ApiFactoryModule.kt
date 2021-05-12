@@ -1,6 +1,5 @@
 package com.example.centerofcat.di
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -13,17 +12,13 @@ import javax.inject.Singleton
 @Module
 class ApiFactoryModule {
 
-
-
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
         val interceptor: HttpLoggingInterceptor = HttpLoggingInterceptor()
 
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        val client = OkHttpClient.Builder().addInterceptor(interceptor).build();
-
-
+        interceptor.apply { interceptor.level = HttpLoggingInterceptor.Level.BODY };
+        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
         return Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create())

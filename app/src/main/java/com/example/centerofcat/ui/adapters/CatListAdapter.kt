@@ -1,7 +1,6 @@
 package com.example.centerofcat.ui.adapters
 
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
@@ -10,8 +9,7 @@ import com.bumptech.glide.Glide
 import com.example.centerofcat.databinding.ImageItemBinding
 import com.example.centerofcat.domain.entities.CatInfo
 
-
-class CatListAdapter(private val callback: CatDiffUtilCallback) :
+class CatListAdapter(callback: CatDiffUtilCallback) :
     PagedListAdapter<CatInfo, CatListAdapter.CatListHolder>(callback) {
 
     var onCatClickListener: OnCatClickListener? = null
@@ -20,7 +18,6 @@ class CatListAdapter(private val callback: CatDiffUtilCallback) :
         RecyclerView.ViewHolder(binding.root) {
         val image = binding.imageView
         fun bind() {
-
             if (getItem(adapterPosition)?.image == null) {
 //            Picasso.get().load(getItem(position)?.url).fit().into(holder.image)
                 Glide.with(binding.root.context)
@@ -35,21 +32,16 @@ class CatListAdapter(private val callback: CatDiffUtilCallback) :
                     .into(image)
             }
         }
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatListHolder {
         val binding = ImageItemBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
-        Log.i("kpop", "cooooooool Joker")
-//        return CatListHolder(binding)
         return CatListHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CatListHolder, position: Int) {
         holder.bind()
-
         holder.itemView.setOnClickListener {
             getItem(position)?.let { it1 -> onCatClickListener?.onCatClick(it1) }
         }
@@ -59,42 +51,10 @@ class CatListAdapter(private val callback: CatDiffUtilCallback) :
                 true
             } == true
         }
-        Log.i("kpop", "cool Joker")
     }
 
     interface OnCatClickListener {
         fun onCatClick(catInfo: CatInfo)
         fun onCatLongClick(catInfo: CatInfo)
     }
-
-
 }
-
-//
-//class CatListAdapter() : RecyclerView.Adapter<CatListAdapter.CatListHolder>() {
-//
-//    var catList = ArrayList<CatInfo>()
-//        set(value) {
-//            field=value
-//            notifyDataSetChanged()
-//        }
-//
-//
-//    override fun getItemCount():Int= 0
-//
-//
-//    inner class CatListHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//
-//    }
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatListHolder {
-//       return CatListHolder(LayoutInflater.from(parent.context).inflate(R.layout.image_item,parent,true))
-//    }
-//
-//    override fun onBindViewHolder(holder: CatListHolder, position: Int) {
-//
-//    }
-//
-//}
-//
-
