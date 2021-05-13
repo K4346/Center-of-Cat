@@ -1,7 +1,6 @@
 package com.example.centerofcat.ui.loadCat
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.domain.entities.analysis.AnalysisCat
@@ -33,14 +32,9 @@ class LoadCatViewModel : BaseViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
 
             .subscribe({
-                Log.i("kpop", "tra ta ta ta$it")
                 catList.addAll(it)
-//                catListInfo.value = pagedList
-                Log.i("kpop", "load $it")
                 onComplete.invoke(it)
             }, {
-                Log.i("kpop", it.toString())
-
             }
             )
 
@@ -57,11 +51,8 @@ class LoadCatViewModel : BaseViewModel() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-
-                    Log.i("kpop", "Analysis success $it")
                     onComplete.invoke(it)
                 }, {
-                    Log.i("kpopQQQQQQQQQQQQQQ", it.toString())
                 })
         compositeDisposable.add(disposable)
     }
@@ -82,12 +73,10 @@ class LoadCatViewModel : BaseViewModel() {
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-                Log.i("kpop", "proizoshel POST CAT")
-                Log.i("kpop", it.toString())
+
                 liveDataForNotPost.value = true
                 catListInfo.value = makeChange()
             }, {
-                Log.i("kpopError", it.toString())
                 liveDataForNotPost.value = false
             })
         compositeDisposable.add(disposable)

@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,11 +78,9 @@ class LoadCatFragment : Fragment() {
     private fun setOnClicksListener(adapter: CatListAdapter) {
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
-                Log.i("kpop", catInfo.id)
                 val analysisToDetail = Bundle()
                 val infoAboutAnalysis = arrayListOf<String>()
                 loadCatViewModel.analysisCat(catInfo.id) { it1 ->
-                    Log.i("kpopq", it1.toString())
                     it1[0].labels?.forEach {
                         infoAboutAnalysis.add(it.name + " - С уверенностью в " + it.confidence + "%")
                     }
@@ -93,7 +90,6 @@ class LoadCatFragment : Fragment() {
                         catInfo.id,
                         ""
                     )
-                    Log.i("kpop", catInfo.url + catInfo.id + catInfo.created_at)
                     analysisToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
                     findNavController().navigate(R.id.navigation_detail, analysisToDetail)
                 }
@@ -138,12 +134,10 @@ class LoadCatFragment : Fragment() {
                 inputData?.toRequestBody("image/jpeg".toMediaTypeOrNull())
             val filePart =
                 requestFile?.let { MultipartBody.Part.createFormData("file", file.name, it) }
-            Log.i("kpop", filePart.toString())
             if (filePart != null) {
                 loadCatViewModel.postLoadCat(filePart)
             }
         } else if (resultCode == Activity.RESULT_OK) {
-            Log.i("kpop", resultCode.toString())
             val extras = data?.extras
             val imageBitmap = extras!!["data"] as Bitmap?
             val stream = ByteArrayOutputStream()

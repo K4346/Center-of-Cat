@@ -24,7 +24,6 @@ class FavouritesCatsViewModel : BaseViewModel() {
                 catList.addAll(it)
                 onComplete.invoke(it)
             }, {
-                Log.i("kpop", it.toString())
             }
             )
         compositeDisposable.add(disposable)

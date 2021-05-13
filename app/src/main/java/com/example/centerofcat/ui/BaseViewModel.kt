@@ -1,6 +1,5 @@
 package com.example.centerofcat.ui
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
@@ -68,21 +67,17 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     fun deleteCatInFavourites(id: String) {
-        Log.i("kpop", id)
         val disposable = catModelImpl.deleteFavouritesCatObject(id).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
                 catListInfo.value = makeChange()
-                Log.i("kpop", "proizoshel DELETE")
             }, {
-                Log.i("kpop2", it.toString())
             })
         compositeDisposable.add(disposable)
     }
 
     fun deleteCatInLoads(id: String) {
-        Log.i("kpop", "delete load $id")
         val disposable = catModelImpl.deleteLoadsCatObject(id).subscribeOn(
             Schedulers.io()
         )

@@ -1,7 +1,6 @@
 package com.example.centerofcat.ui.detailCatInfo
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +33,6 @@ class DetailCatInfoFragment() : Fragment() {
 
     private fun setInfoAboutCat(detailViewModel: DetailViewModel) {
         val detailInformation = requireArguments().getStringArrayList("infoAboutCat")
-        Log.i("kpop", detailInformation.toString())
         Glide.with(binding.root.context).load(detailInformation?.get(0)).centerCrop()
             .into(binding.detailPhoto)
         binding.mainToolbar.title = detailInformation?.get(1)

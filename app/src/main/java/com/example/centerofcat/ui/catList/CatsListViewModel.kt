@@ -1,6 +1,5 @@
 package com.example.centerofcat.ui.catList
 
-import android.util.Log
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.ui.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,7 +45,6 @@ class CatsListViewModel : BaseViewModel() {
                 catList.addAll(it)
                 onComplete.invoke(it)
             }, {
-                Log.i("kpop", it.toString())
             }
             )
         compositeDisposable.add(disposable)
