@@ -8,10 +8,11 @@ import com.example.centerofcat.ui.BaseViewModel
 class CatPositionDataSource(private val viewModel: BaseViewModel) :
     PositionalDataSource<CatInfo>() {
     private var p = 0
+
     override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<CatInfo>) {
         p = 0
         viewModel.loadCats(page = 0) {
-            callback.onResult(it, p)            // Вызывается несколько раз
+            callback.onResult(it, p)
         }
     }
 

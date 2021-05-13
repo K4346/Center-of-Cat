@@ -29,4 +29,7 @@ class FavouritesCatsViewModel : BaseViewModel() {
             )
         compositeDisposable.add(disposable)
     }
+
+
+
 }

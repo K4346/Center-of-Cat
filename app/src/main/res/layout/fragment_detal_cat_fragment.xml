@@ -3,12 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/detail_fragment"
-    android:layout_marginTop="?attr/actionBarSize"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
     android:fitsSystemWindows="true">
-
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/main.appbar"
         android:layout_width="match_parent"
@@ -43,6 +42,7 @@
                 android:id="@+id/main.toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:fontFamily="@font/compact_display_semibold"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:layout_collapseMode="pin"
                 />
@@ -62,9 +62,10 @@
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/compact_display_regular"
             android:textSize="20sp"
             android:lineSpacingExtra="8dp"
-            android:text="Привет Всем любителям кошек"
+            android:text="@string/hi_cat_fans"
             android:padding="@dimen/activity_horizontal_margin"
             />
     </androidx.core.widget.NestedScrollView>

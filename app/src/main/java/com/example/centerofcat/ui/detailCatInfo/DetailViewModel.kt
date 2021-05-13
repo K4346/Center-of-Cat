@@ -1,21 +1,18 @@
 package com.example.centerofcat.ui.detailCatInfo
 
 import android.util.Log
-import com.example.centerofcat.domain.entities.CatInfo
+import androidx.lifecycle.ViewModel
+import com.example.centerofcat.data.repositories.CatModelImpl
 import com.example.centerofcat.domain.entities.VoteCat
-import com.example.centerofcat.ui.BaseViewModel
+import com.example.centerofcat.domain.repositories.CatModel
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class DetailViewModel : BaseViewModel() {
-    override fun loadCats(
-        page: Int,
-        order: String,
-        breed: String,
-        category: String,
-        onComplete: (List<CatInfo>) -> Unit
-    ) {
-    }
+class DetailViewModel : ViewModel() {
+
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val catModelImpl: CatModel = CatModelImpl()
 
     fun makeVoteForTheCat(id: String, value: Int) {
         val voteCat = VoteCat(image_id = id, value = value)
@@ -32,4 +29,11 @@ class DetailViewModel : BaseViewModel() {
             })
         compositeDisposable.add(disposable)
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        compositeDisposable.dispose()
+    }
+
+
 }

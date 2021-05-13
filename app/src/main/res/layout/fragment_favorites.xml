@@ -6,16 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".ui.catFavourites.FavouritesCatsFragment">
 
+    <include
+        android:id="@+id/include8"
+        layout="@layout/actionbar_main" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCatFavouritesList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-
+        app:layout_constraintTop_toBottomOf="@+id/include8">
     </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

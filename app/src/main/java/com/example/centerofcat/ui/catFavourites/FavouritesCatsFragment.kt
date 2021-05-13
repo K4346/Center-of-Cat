@@ -36,23 +36,18 @@ class FavouritesCatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.include8.actionBarTab.text="Избранное"
         catsFavouritesCatsViewModel =
             ViewModelProvider(this).get(FavouritesCatsViewModel::class.java)
-
-
         val adapter = CatListAdapter(catDiffUtilCallback)
-
        setOnClicksListeners(adapter)
-
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatFavouritesList.layoutManager = layoutManager
         binding.rvCatFavouritesList.adapter = adapter
+
         catsFavouritesCatsViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
-
-
     }
 
 

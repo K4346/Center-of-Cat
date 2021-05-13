@@ -4,28 +4,21 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
-
 import com.example.centerofcat.data.repositories.CatModelImpl
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.domain.entities.FavouriteEntity
-import com.example.centerofcat.domain.entities.LoadCat
-import com.example.centerofcat.domain.entities.VoteCat
 import com.example.centerofcat.domain.repositories.CatModel
 import com.example.centerofcat.ui.adapters.CatPositionDataSource
 import com.example.centerofcat.ui.adapters.MainThreadExecutor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 abstract class BaseViewModel : ViewModel() {
+    var k = 0
     val compositeDisposable: CompositeDisposable = CompositeDisposable()
     val catModelImpl: CatModel = CatModelImpl()
-
     val catListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
     var catList: ArrayList<CatInfo> = ArrayList()
     var breedChoose: String = ""
@@ -48,11 +41,12 @@ abstract class BaseViewModel : ViewModel() {
         return pagedList
     }
 
-
     init {
-        catListInfo.value = makeChange()
+        if (k == 0) {
+            catListInfo.value = makeChange()
+            k = 1
+        }
     }
-
 
     abstract fun loadCats(
         page: Int = 1,
@@ -62,21 +56,16 @@ abstract class BaseViewModel : ViewModel() {
         onComplete: ((List<CatInfo>) -> Unit)
     )
 
-
     fun addCatInFavourites(id: String) {
         val favouriteEntity = FavouriteEntity(image_id = id)
         val disposable = catModelImpl.postFavouritesCatObject(favouriteEntity).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-
-                Log.i("kpop", "proizoshel POST")
             }, {
-                Log.i("kpop", it.toString())
             })
         compositeDisposable.add(disposable)
     }
-
 
     fun deleteCatInFavourites(id: String) {
         Log.i("kpop", id)
@@ -90,9 +79,7 @@ abstract class BaseViewModel : ViewModel() {
                 Log.i("kpop2", it.toString())
             })
         compositeDisposable.add(disposable)
-
     }
-
 
     fun deleteCatInLoads(id: String) {
         Log.i("kpop", "delete load $id")
@@ -114,7 +101,6 @@ abstract class BaseViewModel : ViewModel() {
         super.onCleared()
         compositeDisposable.dispose()
     }
-
 
 
 }

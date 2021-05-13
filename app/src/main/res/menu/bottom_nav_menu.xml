@@ -3,17 +3,20 @@
 
     <item
         android:id="@+id/navigation_1"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_cats" />
+        android:icon="@drawable/outline_favorite_24"
+        android:title="@string/title_cats"
+        android:fontFamily="@font/compact_display_semibold"/>
 
     <item
         android:id="@+id/navigation_2"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_favorites" />
+        android:icon="@drawable/outline_verified_24"
+        android:title="@string/title_favorites"
+        android:fontFamily="@font/compact_display_semibold"/>
 
     <item
         android:id="@+id/navigation_3"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/title_load" />
+        android:icon="@drawable/outline_backup_24"
+        android:title="@string/title_load"
+        android:fontFamily="@font/compact_display_semibold"/>
 
 </menu>

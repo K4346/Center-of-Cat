@@ -43,7 +43,6 @@ class LoadCatFragment : Fragment() {
     ): View {
         loadCatViewModel =
             ViewModelProvider(this).get(LoadCatViewModel::class.java)
-
         binding = FragmentLoadBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
@@ -51,6 +50,7 @@ class LoadCatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.include8.actionBarTab.text = "Загрузить Котиков"
         binding.gallery.setOnClickListener {
             openGalleryForImage()
         }

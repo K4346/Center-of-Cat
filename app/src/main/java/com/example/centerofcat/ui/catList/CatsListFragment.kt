@@ -1,7 +1,6 @@
 package com.example.centerofcat.ui.catList
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,6 @@ import com.example.centerofcat.ui.adapters.CatListAdapter
 
 
 class CatsListFragment : Fragment() {
-
     private lateinit var catsListViewModel: CatsListViewModel
     private val catDiffUtilCallback = com.example.centerofcat.ui.adapters.CatDiffUtilCallback()
     private lateinit var binding: FragmentCatListBinding
@@ -44,6 +42,7 @@ class CatsListFragment : Fragment() {
         val adapter = CatListAdapter(catDiffUtilCallback)
         setOnClicksListeners(adapter)
         binding.rvCatList.adapter = adapter
+
         catsListViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
@@ -54,9 +53,7 @@ class CatsListFragment : Fragment() {
             override fun onCatClick(catInfo: CatInfo) {
                 val idToDetail = Bundle()
                 val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, "")
-                Log.i("kpop", catInfo.url + catInfo.id + catInfo.created_at)
                 idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-                idToDetail.putString("i", "infoAboutasssssssCat")
                 findNavController().navigate(R.id.navigation_detail, idToDetail)
             }
 
@@ -72,21 +69,20 @@ class CatsListFragment : Fragment() {
     }
 
     private fun addFilters() {
-        val idsCats = ArrayList<String>()
-        idsCats.add("")
-        val breedsCats = ArrayList<String>()
-        breedsCats.add("")
+        var f1 = 0
+        var f2 = 0
+        var f3 = 0
         val spinnerAdapter =
             context?.let {
                 ArrayAdapter<String>(
                     it,
                     android.R.layout.simple_spinner_item,
-                    breedsCats
+                    catsListViewModel.breedsCats
                 )
             }
         catsListViewModel.loadBreedsCats {
-            breedsCats.addAll(it[0])
-            idsCats.addAll(it[1])
+            catsListViewModel.breedsCats.addAll(it[0])
+            catsListViewModel.idsCats.addAll(it[1])
             spinnerAdapter?.notifyDataSetChanged()
         }
         spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -94,9 +90,12 @@ class CatsListFragment : Fragment() {
         binding.spinnerOfBreed.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    catsListViewModel.breedChoose = idsCats[p2]
-                    Log.i("kpop", catsListViewModel.breedChoose)
-                    catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                    catsListViewModel.breedChoose = catsListViewModel.idsCats[p2]
+                    if (f1 != 0) {
+                        catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                    }
+                    f1 = 1
+
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -104,23 +103,12 @@ class CatsListFragment : Fragment() {
                 }
             }
 
-        val categoriesCats = arrayListOf<String>(
-            "",
-            "boxes",
-            "clothes",
-            "hats",
-            "sinks",
-            "space",
-            "sunglasses",
-            "ties"
-        )
-        val categoriesIdCats = arrayListOf<String>("", "5", "15", "1", "14", "2", "4", "7")
         val spinnerCategoryAdapter =
             context?.let {
                 ArrayAdapter<String>(
                     it,
                     android.R.layout.simple_spinner_item,
-                    categoriesCats
+                    catsListViewModel.categoriesCats
                 )
             }
         spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -128,9 +116,11 @@ class CatsListFragment : Fragment() {
         binding.spinnerOfCategories.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    catsListViewModel.categoryy = categoriesIdCats[p2]
-                    Log.i("kpop", catsListViewModel.categoryy)
-                    catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                    catsListViewModel.categoryy = catsListViewModel.categoriesIdCats[p2]
+                    if (f2 != 0) {
+                        catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                    }
+                    f2 = 1
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -138,25 +128,31 @@ class CatsListFragment : Fragment() {
                 }
             }
 
-        val order = arrayOf("", "ASC", "DESC", "RAND")
+
         val spinnerOrderAdapter =
-            context?.let { ArrayAdapter<String>(it, android.R.layout.simple_spinner_item, order) }
+            context?.let {
+                ArrayAdapter<String>(
+                    it,
+                    android.R.layout.simple_spinner_item,
+                    catsListViewModel.order
+                )
+            }
         spinnerOrderAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerOfOrder.adapter = spinnerOrderAdapter
         binding.spinnerOfOrder.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    catsListViewModel.orderr = order[p2]
-                    catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                    catsListViewModel.orderr = catsListViewModel.order[p2]
+                    if (f3 != 0) {
+                        catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                    }
+                    f3 = 1
+
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
                     catsListViewModel.orderr = ""
                 }
             }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
     }
 }

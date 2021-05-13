@@ -3,8 +3,6 @@ package com.example.centerofcat.domain.entities
 import com.squareup.moshi.Json
 
 data class BreedCatInfo(
-    @Json(name = "weight")
-    val weight: WeightCatInfo? = null,
 
     @Json(name = "id")
     val id: String? = null,

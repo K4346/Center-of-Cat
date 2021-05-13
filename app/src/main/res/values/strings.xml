@@ -6,4 +6,6 @@
     <string name="DetailContentDescription">Главное Изображение с Котом</string>
     <string name="like">Like</string>
     <string name="dislike">Dislike</string>
+    <string name="kotiki">Котики</string>
+    <string name="hi_cat_fans">Привет Всем любителям кошек</string>
 </resources>

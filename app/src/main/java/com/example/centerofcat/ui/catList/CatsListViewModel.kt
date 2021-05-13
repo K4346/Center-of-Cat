@@ -10,7 +10,22 @@ class CatsListViewModel : BaseViewModel() {
 
     private var nameArray = ArrayList<String>()
     private var idArray = ArrayList<String>()
-    private var allArray = ArrayList<ArrayList<String>>()
+    var allArray = ArrayList<ArrayList<String>>()
+    val idsCats = arrayListOf<String>("")
+    val breedsCats = arrayListOf<String>("")
+    val order = arrayOf("", "ASC", "DESC", "RAND")
+    val categoriesCats = arrayListOf<String>(
+        "",
+        "boxes",
+        "clothes",
+        "hats",
+        "sinks",
+        "space",
+        "sunglasses",
+        "ties"
+    )
+    val categoriesIdCats = arrayListOf<String>("", "5", "15", "1", "14", "2", "4", "7")
+
 
     override fun loadCats(
         page: Int,
@@ -40,23 +55,24 @@ class CatsListViewModel : BaseViewModel() {
     fun loadBreedsCats(
         onComplete: ((ArrayList<ArrayList<String>>) -> Unit)
     ) {
-        val disposable = catModelImpl.getBreedsCatObject(
-        )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-
-            .subscribe({
-                it.forEach {
-                    it.name?.let { it1 -> nameArray.add(it1) }
-                    it.id?.let { it1 -> idArray.add(it1) }
-                }
-                allArray.add(nameArray)
-                allArray.add(idArray)
-//                catListInfo.value = pagedList
-                onComplete.invoke(allArray)
-            }, {
-            }
+        if (allArray == ArrayList<ArrayList<String>>()) {
+            val disposable = catModelImpl.getBreedsCatObject(
             )
-        compositeDisposable.add(disposable)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+
+                .subscribe({
+                    it.forEach {
+                        it.name?.let { it1 -> nameArray.add(it1) }
+                        it.id?.let { it1 -> idArray.add(it1) }
+                    }
+                    allArray.add(nameArray)
+                    allArray.add(idArray)
+                    onComplete.invoke(allArray)
+                }, {
+                }
+                )
+            compositeDisposable.add(disposable)
+        } else onComplete.invoke(allArray)
     }
 }

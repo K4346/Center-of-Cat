@@ -20,8 +20,7 @@ class DetailCatInfoFragment() : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDetalCatFragmentBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
