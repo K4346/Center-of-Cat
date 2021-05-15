@@ -125,7 +125,7 @@ class LoadCatFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && resultCode == 100) {
+        if (resultCode == Activity.RESULT_OK && requestCode == 100) {
             uriCat = data?.data
             val file = File(uriCat?.path)
             val iStream = uriCat?.let { context?.contentResolver?.openInputStream(it) }
@@ -137,7 +137,7 @@ class LoadCatFragment : Fragment() {
             if (filePart != null) {
                 loadCatViewModel.postLoadCat(filePart)
             }
-        } else if (resultCode == Activity.RESULT_OK) {
+        } else if (resultCode == Activity.RESULT_OK && requestCode == 1) {
             val extras = data?.extras
             val imageBitmap = extras!!["data"] as Bitmap?
             val stream = ByteArrayOutputStream()
