@@ -42,7 +42,6 @@ class CatsListFragment : Fragment() {
         val adapter = CatListAdapter(catDiffUtilCallback)
         setOnClicksListeners(adapter)
         binding.rvCatList.adapter = adapter
-
         catsListViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
@@ -95,7 +94,6 @@ class CatsListFragment : Fragment() {
                         catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
                     }
                     f1 = 1
-
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -147,7 +145,6 @@ class CatsListFragment : Fragment() {
                         catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
                     }
                     f3 = 1
-
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
