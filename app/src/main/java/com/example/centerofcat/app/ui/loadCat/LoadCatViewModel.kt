@@ -1,10 +1,10 @@
-package com.example.centerofcat.ui.loadCat
+package com.example.centerofcat.app.ui.loadCat
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.domain.entities.analysis.AnalysisCat
-import com.example.centerofcat.ui.BaseViewModel
+import com.example.centerofcat.app.ui.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -25,7 +25,7 @@ class LoadCatViewModel : BaseViewModel() {
         category: String,
         onComplete: ((List<CatInfo>) -> Unit)
     ) {
-        val disposable = catModelImpl.getLoadsCatObject(
+        val disposable = catRepositoryImpl.getLoadsCatObject(
             page = page
         )
             .subscribeOn(Schedulers.io())
@@ -47,7 +47,7 @@ class LoadCatViewModel : BaseViewModel() {
         onComplete: (List<AnalysisCat>) -> Unit
     ) {
         val disposable: Disposable =
-            catModelImpl.getAnalysisAboutLoadCatObject(id = id)
+            catRepositoryImpl.getAnalysisAboutLoadCatObject(id = id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -69,7 +69,7 @@ class LoadCatViewModel : BaseViewModel() {
     }
 
     fun postLoadCat(file: MultipartBody.Part) {
-        val disposable = catModelImpl.postLoadCat(file).subscribeOn(
+        val disposable = catRepositoryImpl.postLoadCat(file).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({

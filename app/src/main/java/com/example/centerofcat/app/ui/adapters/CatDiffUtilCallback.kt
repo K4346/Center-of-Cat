@@ -1,4 +1,4 @@
-package com.example.centerofcat.ui.adapters
+package com.example.centerofcat.app.ui.adapters
 
 
 import androidx.recyclerview.widget.DiffUtil

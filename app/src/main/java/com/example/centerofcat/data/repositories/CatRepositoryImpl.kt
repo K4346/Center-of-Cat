@@ -1,17 +1,18 @@
 package com.example.centerofcat.data.repositories
 
-import com.example.centerofcat.di.App
+import com.example.centerofcat.app.App
 import com.example.centerofcat.domain.entities.BreedCatInfo
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.domain.entities.FavouriteEntity
 import com.example.centerofcat.domain.entities.VoteCat
 import com.example.centerofcat.domain.entities.analysis.AnalysisCat
-import com.example.centerofcat.domain.repositories.CatModel
+import com.example.centerofcat.domain.repositories.CatRepository
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 
-class CatModelImpl : CatModel {
+class CatRepositoryImpl : CatRepository {
+
     override fun getCatObject(
         page: Int,
         order: String,

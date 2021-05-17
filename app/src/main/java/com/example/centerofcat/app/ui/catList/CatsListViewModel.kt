@@ -1,7 +1,7 @@
-package com.example.centerofcat.ui.catList
+package com.example.centerofcat.app.ui.catList
 
+import com.example.centerofcat.app.ui.BaseViewModel
 import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.ui.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -33,7 +33,7 @@ class CatsListViewModel : BaseViewModel() {
         category: String,
         onComplete: ((List<CatInfo>) -> Unit)
     ) {
-        val disposable = catModelImpl.getCatObject(
+        val disposable = catRepositoryImpl.getCatObject(
             page = page,
             order = order,
             breed_ids = breed,
@@ -54,7 +54,7 @@ class CatsListViewModel : BaseViewModel() {
         onComplete: ((ArrayList<ArrayList<String>>) -> Unit)
     ) {
         if (allArray == ArrayList<ArrayList<String>>()) {
-            val disposable = catModelImpl.getBreedsCatObject(
+            val disposable = catRepositoryImpl.getBreedsCatObject(
             )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

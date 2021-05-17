@@ -1,6 +1,6 @@
-package com.example.centerofcat.di
+package com.example.centerofcat.app.di
 
-import com.example.centerofcat.data.api.ApiService
+import com.example.centerofcat.data.api.services.ApiService
 import dagger.Component
 import javax.inject.Singleton
 

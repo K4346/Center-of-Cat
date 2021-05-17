@@ -1,8 +1,7 @@
-package com.example.centerofcat.ui.catFavourites
+package com.example.centerofcat.app.ui.catFavourites
 
-import android.util.Log
 import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.ui.BaseViewModel
+import com.example.centerofcat.app.ui.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -15,7 +14,7 @@ class FavouritesCatsViewModel : BaseViewModel() {
         category: String,
         onComplete: ((List<CatInfo>) -> Unit)
     ) {
-        val disposable = catModelImpl.getFavouritesCat(
+        val disposable = catRepositoryImpl.getFavouritesCat(
             page = page
         )
             .subscribeOn(Schedulers.io())

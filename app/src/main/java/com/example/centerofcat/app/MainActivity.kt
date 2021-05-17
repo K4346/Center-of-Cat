@@ -1,10 +1,11 @@
-package com.example.centerofcat
+package com.example.centerofcat.app
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.example.centerofcat.R
 import com.example.centerofcat.databinding.ActionbarMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 

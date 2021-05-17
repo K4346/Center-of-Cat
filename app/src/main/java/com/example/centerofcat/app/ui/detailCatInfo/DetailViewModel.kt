@@ -1,10 +1,10 @@
-package com.example.centerofcat.ui.detailCatInfo
+package com.example.centerofcat.app.ui.detailCatInfo
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.centerofcat.data.repositories.CatModelImpl
+import com.example.centerofcat.data.repositories.CatRepositoryImpl
 import com.example.centerofcat.domain.entities.VoteCat
-import com.example.centerofcat.domain.repositories.CatModel
+import com.example.centerofcat.domain.repositories.CatRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -12,11 +12,11 @@ import io.reactivex.schedulers.Schedulers
 class DetailViewModel : ViewModel() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private val catModelImpl: CatModel = CatModelImpl()
+    private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
 
     fun makeVoteForTheCat(id: String, value: Int) {
         val voteCat = VoteCat(image_id = id, value = value)
-        val disposable = catModelImpl.postVoteForCat(voteCat = voteCat).subscribeOn(
+        val disposable = catRepositoryImpl.postVoteForCat(voteCat = voteCat).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({

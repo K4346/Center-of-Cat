@@ -1,4 +1,4 @@
-package com.example.centerofcat.ui.catList
+package com.example.centerofcat.app.ui.catList
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,15 +12,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
+import com.example.centerofcat.app.ui.CatDialog
+import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.databinding.FragmentCatListBinding
 import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.ui.CatDialog
-import com.example.centerofcat.ui.adapters.CatListAdapter
 
 
 class CatsListFragment : Fragment() {
     private lateinit var catsListViewModel: CatsListViewModel
-    private val catDiffUtilCallback = com.example.centerofcat.ui.adapters.CatDiffUtilCallback()
+    private val catDiffUtilCallback = com.example.centerofcat.app.ui.adapters.CatDiffUtilCallback()
     private lateinit var binding: FragmentCatListBinding
 
     override fun onCreateView(

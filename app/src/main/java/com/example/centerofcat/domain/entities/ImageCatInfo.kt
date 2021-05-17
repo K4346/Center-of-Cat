@@ -3,15 +3,15 @@ package com.example.centerofcat.domain.entities
 import com.squareup.moshi.Json
 
 data class ImageCatInfo (
-    @Json(name = "id")
+    @field:Json(name = "id")
     val id: String? = null,
 
-    @Json(name = "width")
+    @field:Json(name = "width")
     val width: Int? = null,
 
-    @Json(name = "height")
+    @field:Json(name = "height")
     val height: Int? = null,
 
-    @Json(name = "url")
+    @field:Json(name = "url")
     val url: String? = null
 )

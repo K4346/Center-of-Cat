@@ -9,7 +9,7 @@ import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 
-interface CatModel {
+interface CatRepository {
 
     fun getCatObject(
         page: Int,

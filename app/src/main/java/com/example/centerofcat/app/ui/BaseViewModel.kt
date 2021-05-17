@@ -1,14 +1,14 @@
-package com.example.centerofcat.ui
+package com.example.centerofcat.app.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
-import com.example.centerofcat.data.repositories.CatModelImpl
+import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
+import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
+import com.example.centerofcat.data.repositories.CatRepositoryImpl
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.domain.entities.FavouriteEntity
-import com.example.centerofcat.domain.repositories.CatModel
-import com.example.centerofcat.ui.adapters.CatPositionDataSource
-import com.example.centerofcat.ui.adapters.MainThreadExecutor
+import com.example.centerofcat.domain.repositories.CatRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -17,7 +17,7 @@ import java.util.concurrent.Executors
 abstract class BaseViewModel : ViewModel() {
     var k = 0
     val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    val catModelImpl: CatModel = CatModelImpl()
+    val catRepositoryImpl: CatRepository = CatRepositoryImpl()
     val catListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
     var catList: ArrayList<CatInfo> = ArrayList()
     var breedChoose: String = ""
@@ -57,7 +57,7 @@ abstract class BaseViewModel : ViewModel() {
 
     fun addCatInFavourites(id: String) {
         val favouriteEntity = FavouriteEntity(image_id = id)
-        val disposable = catModelImpl.postFavouritesCatObject(favouriteEntity).subscribeOn(
+        val disposable = catRepositoryImpl.postFavouritesCatObject(favouriteEntity).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
@@ -67,7 +67,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     fun deleteCatInFavourites(id: String) {
-        val disposable = catModelImpl.deleteFavouritesCatObject(id).subscribeOn(
+        val disposable = catRepositoryImpl.deleteFavouritesCatObject(id).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
@@ -78,7 +78,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     fun deleteCatInLoads(id: String) {
-        val disposable = catModelImpl.deleteLoadsCatObject(id).subscribeOn(
+        val disposable = catRepositoryImpl.deleteLoadsCatObject(id).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({

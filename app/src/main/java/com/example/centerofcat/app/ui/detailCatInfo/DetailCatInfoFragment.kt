@@ -1,4 +1,4 @@
-package com.example.centerofcat.ui.detailCatInfo
+package com.example.centerofcat.app.ui.detailCatInfo
 
 import android.os.Bundle
 import android.view.LayoutInflater

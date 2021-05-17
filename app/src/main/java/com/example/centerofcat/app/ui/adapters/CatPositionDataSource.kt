@@ -1,8 +1,8 @@
-package com.example.centerofcat.ui.adapters
+package com.example.centerofcat.app.ui.adapters
 
 import androidx.paging.PositionalDataSource
+import com.example.centerofcat.app.ui.BaseViewModel
 import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.ui.BaseViewModel
 
 
 class CatPositionDataSource(private val viewModel: BaseViewModel) :

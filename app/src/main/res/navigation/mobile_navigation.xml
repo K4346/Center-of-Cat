@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_1"
-        android:name="com.example.centerofcat.ui.catList.CatsListFragment"
+        android:name="com.example.centerofcat.app.ui.catList.CatsListFragment"
         android:label="@string/title_cats"
         tools:layout="@layout/fragment_cat_list" >
 
@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/navigation_2"
-        android:name="com.example.centerofcat.ui.catFavourites.FavouritesCatsFragment"
+        android:name="com.example.centerofcat.app.ui.catFavourites.FavouritesCatsFragment"
         android:label="@string/title_favorites"
         tools:layout="@layout/fragment_favorites" >
 
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/navigation_3"
-        android:name="com.example.centerofcat.ui.loadCat.LoadCatFragment"
+        android:name="com.example.centerofcat.app.ui.loadCat.LoadCatFragment"
         android:label="@string/title_load"
         tools:layout="@layout/fragment_load" >
 
@@ -31,7 +31,7 @@
 
     <fragment
         android:id="@+id/navigation_detail"
-        android:name="com.example.centerofcat.ui.detailCatInfo.DetailCatInfoFragment"
+        android:name="com.example.centerofcat.app.ui.detailCatInfo.DetailCatInfoFragment"
         android:label="Информация о Котике"
         tools:layout="@layout/fragment_load" >
 

@@ -1,4 +1,4 @@
-package com.example.centerofcat.ui
+package com.example.centerofcat.app.ui
 
 import android.app.AlertDialog
 import android.app.Dialog

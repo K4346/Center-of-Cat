@@ -1,4 +1,4 @@
-package com.example.centerofcat.ui.catFavourites
+package com.example.centerofcat.app.ui.catFavourites
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,13 +12,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.databinding.FragmentFavoritesBinding
 import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.ui.CatDialog
-import com.example.centerofcat.ui.adapters.CatListAdapter
+import com.example.centerofcat.app.ui.CatDialog
+import com.example.centerofcat.app.ui.adapters.CatListAdapter
 
 class FavouritesCatsFragment : Fragment() {
 
     private lateinit var catsFavouritesCatsViewModel: FavouritesCatsViewModel
-    private val catDiffUtilCallback = com.example.centerofcat.ui.adapters.CatDiffUtilCallback()
+    private val catDiffUtilCallback = com.example.centerofcat.app.ui.adapters.CatDiffUtilCallback()
     private lateinit var binding: FragmentFavoritesBinding
 
     override fun onCreateView(

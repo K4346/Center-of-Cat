@@ -1,4 +1,4 @@
-package com.example.centerofcat.ui.loadCat
+package com.example.centerofcat.app.ui.loadCat
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.databinding.FragmentLoadBinding
 import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.ui.CatDialog
-import com.example.centerofcat.ui.adapters.CatListAdapter
+import com.example.centerofcat.app.ui.CatDialog
+import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -31,7 +31,7 @@ import java.io.File
 
 class LoadCatFragment : Fragment() {
     var uriCat: Uri? = null
-    private val catDiffUtilCallback = com.example.centerofcat.ui.adapters.CatDiffUtilCallback()
+    private val catDiffUtilCallback = com.example.centerofcat.app.ui.adapters.CatDiffUtilCallback()
     private lateinit var loadCatViewModel: LoadCatViewModel
     private lateinit var binding: FragmentLoadBinding
 
