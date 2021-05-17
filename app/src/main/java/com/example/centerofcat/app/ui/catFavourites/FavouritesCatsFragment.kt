@@ -10,16 +10,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
-import com.example.centerofcat.databinding.FragmentFavoritesBinding
-import com.example.centerofcat.domain.entities.CatInfo
+import com.example.centerofcat.app.app
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
+import com.example.centerofcat.databinding.FragmentFavoritesBinding
+import com.example.centerofcat.domain.entities.CatInfo
+import javax.inject.Inject
 
 class FavouritesCatsFragment : Fragment() {
 
     private lateinit var catsFavouritesCatsViewModel: FavouritesCatsViewModel
-    private val catDiffUtilCallback = com.example.centerofcat.app.ui.adapters.CatDiffUtilCallback()
     private lateinit var binding: FragmentFavoritesBinding
+
+    @Inject
+    lateinit var adapter: CatListAdapter
+    val app = app()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +40,7 @@ class FavouritesCatsFragment : Fragment() {
         binding.include8.actionBarTab.text = "Избранное"
         catsFavouritesCatsViewModel =
             ViewModelProvider(this).get(FavouritesCatsViewModel::class.java)
-        val adapter = CatListAdapter(catDiffUtilCallback)
+        app.component.injectAdapter(this)
         setOnClicksListeners(adapter)
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatFavouritesList.layoutManager = layoutManager

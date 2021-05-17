@@ -12,10 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
+import com.example.centerofcat.app.app
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.databinding.FragmentCatListBinding
 import com.example.centerofcat.domain.entities.CatInfo
+import javax.inject.Inject
 
 
 class CatsListFragment : Fragment() {
@@ -23,6 +25,9 @@ class CatsListFragment : Fragment() {
     private val catDiffUtilCallback = com.example.centerofcat.app.ui.adapters.CatDiffUtilCallback()
     private lateinit var binding: FragmentCatListBinding
 
+    @Inject
+    lateinit var adapter: CatListAdapter
+    val app = app()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,6 +41,7 @@ class CatsListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         catsListViewModel =
             ViewModelProvider(this).get(CatsListViewModel::class.java)
+        app.component.injectAdapter(this)
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatList.layoutManager = layoutManager
         addFilters()

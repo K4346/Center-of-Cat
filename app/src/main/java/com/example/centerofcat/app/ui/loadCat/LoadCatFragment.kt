@@ -17,23 +17,28 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
-import com.example.centerofcat.databinding.FragmentLoadBinding
-import com.example.centerofcat.domain.entities.CatInfo
+import com.example.centerofcat.app.app
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
+import com.example.centerofcat.databinding.FragmentLoadBinding
+import com.example.centerofcat.domain.entities.CatInfo
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
+import javax.inject.Inject
 
 
 class LoadCatFragment : Fragment() {
     var uriCat: Uri? = null
-    private val catDiffUtilCallback = com.example.centerofcat.app.ui.adapters.CatDiffUtilCallback()
     private lateinit var loadCatViewModel: LoadCatViewModel
     private lateinit var binding: FragmentLoadBinding
+
+    @Inject
+    lateinit var adapter: CatListAdapter
+    val app = app()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,8 +48,7 @@ class LoadCatFragment : Fragment() {
         loadCatViewModel =
             ViewModelProvider(this).get(LoadCatViewModel::class.java)
         binding = FragmentLoadBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,7 +60,7 @@ class LoadCatFragment : Fragment() {
         binding.camera.setOnClickListener {
             dispatchTakePictureIntent()
         }
-        val adapter = CatListAdapter(catDiffUtilCallback)
+        app.component.injectAdapter(this)
         setOnClicksListener(adapter)
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatLoadList.layoutManager = layoutManager
