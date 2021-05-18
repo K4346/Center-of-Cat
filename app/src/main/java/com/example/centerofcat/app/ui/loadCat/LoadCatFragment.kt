@@ -19,7 +19,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.app.app
-import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.databinding.FragmentLoadBinding
 import com.example.centerofcat.domain.entities.CatInfo
@@ -57,7 +56,7 @@ class LoadCatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.include8.actionBarTab.text = "Загрузить Котиков"
+        actionBarSetText()
         binding.gallery.setOnClickListener {
             openGalleryForImage()
         }
@@ -65,15 +64,7 @@ class LoadCatFragment : Fragment() {
             dispatchTakePictureIntent()
         }
         app.component.injectAdapter(this)
-        setOnClicksListener(adapter)
-        val layoutManager = GridLayoutManager(context, 2)
-        binding.rvCatLoadList.layoutManager = layoutManager
-        binding.rvCatLoadList.adapter = adapter
-
-        loadCatViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it)
-            adapter.notifyDataSetChanged()
-        })
+        adapterSettings()
         loadCatViewModel.liveDataForNotPost.observe(viewLifecycleOwner, Observer {
             if (it) {
                 Toast.makeText(context, "Кот загрузился", Toast.LENGTH_SHORT).show()
@@ -81,8 +72,22 @@ class LoadCatFragment : Fragment() {
                 Toast.makeText(context, "На фото нет кота", Toast.LENGTH_SHORT).show()
             }
         })
-
     }
+
+    private fun actionBarSetText() {
+        binding.include8.actionBarTab.text = "Загрузить Котиков"
+    }
+
+    private fun adapterSettings() {
+        setOnClicksListener(adapter)
+        val layoutManager = GridLayoutManager(context, 2)
+        binding.rvCatLoadList.layoutManager = layoutManager
+        binding.rvCatLoadList.adapter = adapter
+        loadCatViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+        })
+    }
+
 
     private fun setOnClicksListener(adapter: CatListAdapter) {
 
@@ -91,32 +96,21 @@ class LoadCatFragment : Fragment() {
                 loadCatViewModel.analysisCat(catInfo.id)
                 loadCatViewModel.analysisCatLiveData.observe(viewLifecycleOwner, Observer
                 { it1 ->
-                    val analysisToDetail = Bundle()
-                    val infoAboutAnalysis = arrayListOf<String>()
-                    it1[0].labels?.forEach {
-                        infoAboutAnalysis.add(it.name + " - С уверенностью в " + it.confidence + "%")
-                    }
-                    analysisToDetail.putStringArrayList("infoAnalysis", infoAboutAnalysis)
-                    val infoAboutCat = arrayListOf<String>(
-                        catInfo.url,
-                        catInfo.id,
-                        ""
+                    findNavController().navigate(
+                        R.id.navigation_detail,
+                        loadCatViewModel.onCatClick(catInfo, it1)
                     )
-                    analysisToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-                    findNavController().navigate(R.id.navigation_detail, analysisToDetail)
-
                 })
             }
 
             override fun onCatLongClick(catInfo: CatInfo) {
-                val dialog = CatDialog(catInfo, loadCatViewModel, 3)
                 activity?.supportFragmentManager.let {
                     if (it != null) {
-                        dialog.show(it, "dialog")
+                        loadCatViewModel.onCatLongClick(catInfo, loadCatViewModel, 3)
+                            .show(it, "dialog")
                     }
                 }
             }
-
         }
     }
 

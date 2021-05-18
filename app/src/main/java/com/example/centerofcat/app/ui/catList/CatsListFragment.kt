@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.app.app
-import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.databinding.FragmentCatListBinding
 import com.example.centerofcat.domain.entities.CatInfo
@@ -41,6 +40,10 @@ class CatsListFragment : Fragment() {
         catsListViewModel =
             ViewModelProvider(this).get(CatsListViewModel::class.java)
         app.component.injectAdapter(this)
+        adapterSettings()
+    }
+
+    private fun adapterSettings() {
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatList.layoutManager = layoutManager
         setOnClicksListeners(adapter)
@@ -49,23 +52,22 @@ class CatsListFragment : Fragment() {
         catsListViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
-
     }
 
     private fun setOnClicksListeners(adapter: CatListAdapter) {
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
-                val idToDetail = Bundle()
-                val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, "")
-                idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-                findNavController().navigate(R.id.navigation_detail, idToDetail)
+                findNavController().navigate(
+                    R.id.navigation_detail,
+                    catsListViewModel.onCatClick(catInfo)
+                )
             }
 
             override fun onCatLongClick(catInfo: CatInfo) {
-                val dialog = CatDialog(catInfo, catsListViewModel, 1)
                 activity?.supportFragmentManager.let {
                     if (it != null) {
-                        dialog.show(it, "dialog")
+                        catsListViewModel.setOnCatLongClick(catInfo, catsListViewModel, 1)
+                            .show(it, "dialog")
                     }
                 }
             }

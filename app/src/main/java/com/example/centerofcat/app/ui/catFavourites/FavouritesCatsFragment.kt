@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.app.app
-import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.databinding.FragmentFavoritesBinding
 import com.example.centerofcat.domain.entities.CatInfo
@@ -37,15 +36,22 @@ class FavouritesCatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.include8.actionBarTab.text = "Избранное"
+       actionBarSetText()
         catsFavouritesCatsViewModel =
             ViewModelProvider(this).get(FavouritesCatsViewModel::class.java)
         app.component.injectAdapter(this)
         setOnClicksListeners(adapter)
+        adapterSettings()
+    }
+
+    private fun actionBarSetText(){
+        binding.include8.actionBarTab.text = "Избранное"
+    }
+
+    private fun adapterSettings() {
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatFavouritesList.layoutManager = layoutManager
         binding.rvCatFavouritesList.adapter = adapter
-
         catsFavouritesCatsViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
@@ -54,21 +60,20 @@ class FavouritesCatsFragment : Fragment() {
     private fun setOnClicksListeners(adapter: CatListAdapter) {
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
-                val idToDetail = Bundle()
-                val infoAboutCat = arrayListOf<String>(
-                    catInfo.image?.url.toString(),
-                    catInfo.image?.id.toString(),
-                    catInfo.created_at
+                findNavController().navigate(
+                    R.id.navigation_detail,
+                    catsFavouritesCatsViewModel.onCatClick(catInfo)
                 )
-                idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-                findNavController().navigate(R.id.navigation_detail, idToDetail)
             }
 
             override fun onCatLongClick(catInfo: CatInfo) {
-                val dialog = CatDialog(catInfo, catsFavouritesCatsViewModel, 2)
                 activity?.supportFragmentManager.let {
                     if (it != null) {
-                        dialog.show(it, "dialog")
+                        catsFavouritesCatsViewModel.onCatLongClick(
+                            catInfo,
+                            catsFavouritesCatsViewModel,
+                            2
+                        ).show(it, "dialog")
                     }
                 }
             }

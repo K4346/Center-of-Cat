@@ -1,8 +1,10 @@
 package com.example.centerofcat.app.ui.catList
 
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
+import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
 import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.data.repositories.CatRepositoryImpl
@@ -23,8 +25,6 @@ class CatsListViewModel : ViewModel() {
     var breedChoose: String = ""
     var orderr: String = ""
     var categoryy: String = ""
-
-
     val breedsCatLiveData: MutableLiveData<ArrayList<ArrayList<String>>> = MutableLiveData()
     private var nameArray = ArrayList<String>()
     private var idArray = ArrayList<String>()
@@ -99,8 +99,6 @@ class CatsListViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-//                catList.addAll(it)
-//                loadCatLiveData.value=it
                 onComplete.invoke(it)
             }, {
             }
@@ -140,6 +138,22 @@ class CatsListViewModel : ViewModel() {
             }, {
             })
         compositeDisposable.add(disposable)
+    }
+
+    fun onCatClick(catInfo: CatInfo): Bundle {
+        val idToDetail = Bundle()
+        val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, "")
+        idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
+        return idToDetail
+    }
+
+    fun setOnCatLongClick(
+        catInfo: CatInfo,
+        catsListViewModel: CatsListViewModel,
+        i: Int
+    ): CatDialog {
+        return CatDialog(catInfo, catsListViewModel, i)
+
     }
 
     override fun onCleared() {

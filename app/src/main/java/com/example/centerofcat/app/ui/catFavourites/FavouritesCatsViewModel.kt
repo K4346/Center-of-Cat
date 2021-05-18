@@ -1,8 +1,10 @@
 package com.example.centerofcat.app.ui.catFavourites
 
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
+import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
 import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.data.repositories.CatRepositoryImpl
@@ -85,6 +87,26 @@ class FavouritesCatsViewModel : ViewModel() {
             }, {
             })
         compositeDisposable.add(disposable)
+    }
+
+    fun onCatClick(catInfo: CatInfo): Bundle {
+        val idToDetail = Bundle()
+        val infoAboutCat = arrayListOf<String>(
+            catInfo.image?.url.toString(),
+            catInfo.image?.id.toString(),
+            catInfo.created_at
+        )
+        idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
+        return idToDetail
+    }
+
+    fun onCatLongClick(
+        catInfo: CatInfo,
+        catsFavouritesCatsViewModel: FavouritesCatsViewModel,
+        i: Int
+    ): CatDialog {
+        return CatDialog(catInfo, catsFavouritesCatsViewModel, i)
+
     }
 
     override fun onCleared() {

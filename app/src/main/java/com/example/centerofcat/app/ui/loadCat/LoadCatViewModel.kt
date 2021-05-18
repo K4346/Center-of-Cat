@@ -1,8 +1,10 @@
 package com.example.centerofcat.app.ui.loadCat
 
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
+import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
 import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.data.repositories.CatRepositoryImpl
@@ -124,6 +126,31 @@ class LoadCatViewModel : ViewModel() {
                 catPagedListInfo.value = makeChange()
             })
         compositeDisposable.add(disposable)
+    }
+
+    fun onCatClick(catInfo: CatInfo, listAnalysisCat: List<AnalysisCat>): Bundle {
+        val analysisToDetail = Bundle()
+        val infoAboutAnalysis = arrayListOf<String>()
+        listAnalysisCat[0].labels?.forEach {
+            infoAboutAnalysis.add(it.name + " - С уверенностью в " + it.confidence + "%")
+        }
+        analysisToDetail.putStringArrayList("infoAnalysis", infoAboutAnalysis)
+        val infoAboutCat = arrayListOf<String>(
+            catInfo.url,
+            catInfo.id,
+            ""
+        )
+        analysisToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
+        return analysisToDetail
+    }
+
+    fun onCatLongClick(
+        catInfo: CatInfo,
+        loadCatViewModel: LoadCatViewModel,
+        i: Int
+    ): CatDialog {
+        return CatDialog(catInfo, loadCatViewModel, i)
+
     }
 
     override fun onCleared() {
