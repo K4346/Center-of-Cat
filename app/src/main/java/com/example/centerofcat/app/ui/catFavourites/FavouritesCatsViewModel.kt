@@ -1,6 +1,8 @@
 package com.example.centerofcat.app.ui.catFavourites
 
+import android.app.Application
 import android.os.Bundle
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
@@ -15,7 +17,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.Executors
 
-class FavouritesCatsViewModel : ViewModel() {
+class FavouritesCatsViewModel(application: Application) : AndroidViewModel(application) {
     var k = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()

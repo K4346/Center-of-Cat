@@ -1,6 +1,8 @@
 package com.example.centerofcat.app.ui.loadCat
 
+import android.app.Application
 import android.os.Bundle
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
@@ -18,7 +20,7 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
 import java.util.concurrent.Executors
 
-class LoadCatViewModel : ViewModel() {
+class LoadCatViewModel(application: Application) : AndroidViewModel(application) {
     var k = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()

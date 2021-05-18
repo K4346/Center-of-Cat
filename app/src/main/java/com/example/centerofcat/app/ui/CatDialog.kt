@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import com.example.centerofcat.app.ui.catFavourites.FavouritesCatsViewModel
 import com.example.centerofcat.app.ui.catList.CatsListViewModel
@@ -13,7 +14,7 @@ import com.example.centerofcat.domain.entities.CatInfo
 
 class CatDialog(
     private val catInfo: CatInfo,
-    private val viewModel: ViewModel,
+    private val viewModel: AndroidViewModel,
     private val tap: Int
 ) :
     DialogFragment() {
