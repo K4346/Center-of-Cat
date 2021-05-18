@@ -1,5 +1,7 @@
 package com.example.centerofcat.app.ui.catList
 
+import androidx.lifecycle.MutableLiveData
+import androidx.paging.PositionalDataSource
 import com.example.centerofcat.app.ui.BaseViewModel
 import com.example.centerofcat.domain.entities.CatInfo
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -7,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 
 class CatsListViewModel : BaseViewModel() {
 
+    val breedsCatLiveData: MutableLiveData<ArrayList<ArrayList<String>>> = MutableLiveData()
     private var nameArray = ArrayList<String>()
     private var idArray = ArrayList<String>()
     var allArray = ArrayList<ArrayList<String>>()
@@ -24,6 +27,7 @@ class CatsListViewModel : BaseViewModel() {
         "ties"
     )
     val categoriesIdCats = arrayListOf<String>("", "5", "15", "1", "14", "2", "4", "7")
+
 
 
     override fun loadCats(
@@ -51,7 +55,6 @@ class CatsListViewModel : BaseViewModel() {
     }
 
     fun loadBreedsCats(
-        onComplete: ((ArrayList<ArrayList<String>>) -> Unit)
     ) {
         if (allArray == ArrayList<ArrayList<String>>()) {
             val disposable = catRepositoryImpl.getBreedsCatObject(
@@ -66,11 +69,11 @@ class CatsListViewModel : BaseViewModel() {
                     }
                     allArray.add(nameArray)
                     allArray.add(idArray)
-                    onComplete.invoke(allArray)
+                    breedsCatLiveData.value = allArray
                 }, {
                 }
                 )
             compositeDisposable.add(disposable)
-        } else onComplete.invoke(allArray)
+        }
     }
 }

@@ -40,11 +40,11 @@ class DetailCatInfoFragment() : Fragment() {
             binding.description.text = binding.description.text.toString() + "\n" + it[2]
         }
         binding.like.setOnClickListener {
-            detailInformation?.get(1)?.let { it1 -> detailViewModel.makeVoteForTheCat(it1, 1) }
+            detailInformation?.get(1)?.let { it1 -> detailViewModel.onActivityResult(it1, 1) }
             Toast.makeText(binding.root.context, "Like", Toast.LENGTH_SHORT / 2).show()
         }
         binding.dislike.setOnClickListener {
-            detailInformation?.get(1)?.let { it1 -> detailViewModel.makeVoteForTheCat(it1, 0) }
+            detailInformation?.get(1)?.let { it1 -> detailViewModel.onActivityResult(it1, 0) }
             Toast.makeText(binding.root.context, "Dislike", Toast.LENGTH_SHORT / 2).show()
         }
     }

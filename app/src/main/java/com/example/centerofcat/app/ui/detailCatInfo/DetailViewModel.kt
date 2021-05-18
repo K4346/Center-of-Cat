@@ -14,7 +14,7 @@ class DetailViewModel : ViewModel() {
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
 
-    fun makeVoteForTheCat(id: String, value: Int) {
+    fun onActivityResult(id: String, value: Int) {
         val voteCat = VoteCat(image_id = id, value = value)
         val disposable = catRepositoryImpl.postVoteForCat(voteCat = voteCat).subscribeOn(
             Schedulers.io()

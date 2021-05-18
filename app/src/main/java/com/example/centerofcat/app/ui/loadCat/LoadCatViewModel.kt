@@ -17,6 +17,7 @@ import java.util.*
 
 class LoadCatViewModel : BaseViewModel() {
 
+    val analysisCatLiveData: MutableLiveData<List<AnalysisCat>> = MutableLiveData()
     var liveDataForNotPost: MutableLiveData<Boolean> = MutableLiveData()
     override fun loadCats(
         page: Int,
@@ -37,61 +38,34 @@ class LoadCatViewModel : BaseViewModel() {
             }, {
             }
             )
-
-
         compositeDisposable.add(disposable)
     }
 
     fun analysisCat(
         id: String,
-        onComplete: (List<AnalysisCat>) -> Unit
     ) {
         val disposable: Disposable =
             catRepositoryImpl.getAnalysisAboutLoadCatObject(id = id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    onComplete.invoke(it)
+                   analysisCatLiveData.value=it
                 }, {
                 })
         compositeDisposable.add(disposable)
     }
 
-    fun getBytes(inputStream: InputStream): ByteArray? {
-        val byteBuffer = ByteArrayOutputStream()
-        val bufferSize = 1024
-        val buffer = ByteArray(bufferSize)
-        var len: Int
-        while (inputStream.read(buffer).also { len = it } != -1) {
-            byteBuffer.write(buffer, 0, len)
-        }
-        return byteBuffer.toByteArray()
-    }
-
-    fun postLoadCat(file: MultipartBody.Part) {
+    fun onActivityResult(file: MultipartBody.Part) {
         val disposable = catRepositoryImpl.postLoadCat(file).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
 
                 liveDataForNotPost.value = true
-                catListInfo.value = makeChange()
+                catPagedListInfo.value = makeChange()
             }, {
                 liveDataForNotPost.value = false
             })
         compositeDisposable.add(disposable)
-    }
-
-    fun createImageFile(): String {
-        @SuppressLint("SimpleDateFormat") val timeStamp =
-            SimpleDateFormat("yyyyMMdd_HHmmss").format(
-                Date()
-            )
-        val imageFileName = "CamPhoto$timeStamp"
-        val image = File.createTempFile(
-            imageFileName,
-            ".jpg"
-        )
-        return image.absolutePath
     }
 }

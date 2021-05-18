@@ -18,7 +18,7 @@ abstract class BaseViewModel : ViewModel() {
     var k = 0
     val compositeDisposable: CompositeDisposable = CompositeDisposable()
     val catRepositoryImpl: CatRepository = CatRepositoryImpl()
-    val catListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
+    val catPagedListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
     var catList: ArrayList<CatInfo> = ArrayList()
     var breedChoose: String = ""
     var orderr: String = ""
@@ -42,7 +42,7 @@ abstract class BaseViewModel : ViewModel() {
 
     init {
         if (k == 0) {
-            catListInfo.value = makeChange()
+            catPagedListInfo.value = makeChange()
             k = 1
         }
     }
@@ -71,7 +71,7 @@ abstract class BaseViewModel : ViewModel() {
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-                catListInfo.value = makeChange()
+                catPagedListInfo.value = makeChange()
             }, {
             })
         compositeDisposable.add(disposable)
@@ -83,9 +83,9 @@ abstract class BaseViewModel : ViewModel() {
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
 
-                catListInfo.value = makeChange()
+                catPagedListInfo.value = makeChange()
             }, {
-                catListInfo.value = makeChange()
+                catPagedListInfo.value = makeChange()
             })
         compositeDisposable.add(disposable)
 

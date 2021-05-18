@@ -44,11 +44,10 @@ class CatsListFragment : Fragment() {
         app.component.injectAdapter(this)
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatList.layoutManager = layoutManager
-        addFilters()
-        val adapter = CatListAdapter(catDiffUtilCallback)
         setOnClicksListeners(adapter)
         binding.rvCatList.adapter = adapter
-        catsListViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
+        addFilters()
+        catsListViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
     }
@@ -74,22 +73,54 @@ class CatsListFragment : Fragment() {
     }
 
     private fun addFilters() {
-        var f1 = 0
-        var f2 = 0
-        var f3 = 0
-        val spinnerAdapter =
-            context?.let {
-                ArrayAdapter<String>(
-                    it,
-                    android.R.layout.simple_spinner_item,
-                    catsListViewModel.breedsCats
-                )
+        addBreedsAdapter()
+
+        addCategoriesAdapter()
+
+        addOrderAdapter()
+    }
+
+    private fun spinnerAdapterMake(tap: Int): ArrayAdapter<String>? {
+        when (tap) {
+            1 -> {
+                return context?.let {
+                    ArrayAdapter<String>(
+                        it,
+                        android.R.layout.simple_spinner_item,
+                        catsListViewModel.breedsCats
+                    )
+                }
             }
-        catsListViewModel.loadBreedsCats {
+            2 -> {
+                return context?.let {
+                    ArrayAdapter<String>(
+                        it,
+                        android.R.layout.simple_spinner_item,
+                        catsListViewModel.categoriesCats
+                    )
+                }
+            }
+            else -> {
+                return context?.let {
+                    ArrayAdapter<String>(
+                        it,
+                        android.R.layout.simple_spinner_item,
+                        catsListViewModel.order
+                    )
+                }
+            }
+        }
+    }
+
+    private fun addBreedsAdapter() {
+        var f1 = 0
+        val spinnerAdapter = spinnerAdapterMake(1)
+        catsListViewModel.loadBreedsCats()
+        catsListViewModel.breedsCatLiveData.observe(viewLifecycleOwner, Observer {
             catsListViewModel.breedsCats.addAll(it[0])
             catsListViewModel.idsCats.addAll(it[1])
             spinnerAdapter?.notifyDataSetChanged()
-        }
+        })
         spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerOfBreed.adapter = spinnerAdapter
         binding.spinnerOfBreed.onItemSelectedListener =
@@ -97,7 +128,8 @@ class CatsListFragment : Fragment() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.breedChoose = catsListViewModel.idsCats[p2]
                     if (f1 != 0) {
-                        catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                        catsListViewModel.catPagedListInfo.value =
+                            catsListViewModel.makeChange()
                     }
                     f1 = 1
                 }
@@ -106,23 +138,19 @@ class CatsListFragment : Fragment() {
                     catsListViewModel.breedChoose = ""
                 }
             }
+    }
 
-        val spinnerCategoryAdapter =
-            context?.let {
-                ArrayAdapter<String>(
-                    it,
-                    android.R.layout.simple_spinner_item,
-                    catsListViewModel.categoriesCats
-                )
-            }
-        spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    private fun addCategoriesAdapter() {
+        var f2 = 0
+        val spinnerCategoryAdapter = spinnerAdapterMake(2)
+        spinnerCategoryAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerOfCategories.adapter = spinnerCategoryAdapter
         binding.spinnerOfCategories.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.categoryy = catsListViewModel.categoriesIdCats[p2]
                     if (f2 != 0) {
-                        catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                        catsListViewModel.catPagedListInfo.value = catsListViewModel.makeChange()
                     }
                     f2 = 1
                 }
@@ -131,16 +159,11 @@ class CatsListFragment : Fragment() {
                     catsListViewModel.categoryy = ""
                 }
             }
+    }
 
-
-        val spinnerOrderAdapter =
-            context?.let {
-                ArrayAdapter<String>(
-                    it,
-                    android.R.layout.simple_spinner_item,
-                    catsListViewModel.order
-                )
-            }
+    private fun addOrderAdapter() {
+        var f3 = 0
+        val spinnerOrderAdapter = spinnerAdapterMake(3)
         spinnerOrderAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerOfOrder.adapter = spinnerOrderAdapter
         binding.spinnerOfOrder.onItemSelectedListener =
@@ -148,7 +171,7 @@ class CatsListFragment : Fragment() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.orderr = catsListViewModel.order[p2]
                     if (f3 != 0) {
-                        catsListViewModel.catListInfo.value = catsListViewModel.makeChange()
+                        catsListViewModel.catPagedListInfo.value = catsListViewModel.makeChange()
                     }
                     f3 = 1
                 }

@@ -46,7 +46,7 @@ class FavouritesCatsFragment : Fragment() {
         binding.rvCatFavouritesList.layoutManager = layoutManager
         binding.rvCatFavouritesList.adapter = adapter
 
-        catsFavouritesCatsViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
+        catsFavouritesCatsViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
     }

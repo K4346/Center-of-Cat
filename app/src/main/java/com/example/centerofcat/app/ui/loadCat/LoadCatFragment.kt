@@ -1,5 +1,6 @@
 package com.example.centerofcat.app.ui.loadCat
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -28,6 +29,9 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 
@@ -66,7 +70,7 @@ class LoadCatFragment : Fragment() {
         binding.rvCatLoadList.layoutManager = layoutManager
         binding.rvCatLoadList.adapter = adapter
 
-        loadCatViewModel.catListInfo.observe(viewLifecycleOwner, Observer {
+        loadCatViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         })
@@ -77,14 +81,18 @@ class LoadCatFragment : Fragment() {
                 Toast.makeText(context, "На фото нет кота", Toast.LENGTH_SHORT).show()
             }
         })
+
     }
 
     private fun setOnClicksListener(adapter: CatListAdapter) {
+
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
-                val analysisToDetail = Bundle()
-                val infoAboutAnalysis = arrayListOf<String>()
-                loadCatViewModel.analysisCat(catInfo.id) { it1 ->
+                loadCatViewModel.analysisCat(catInfo.id)
+                loadCatViewModel.analysisCatLiveData.observe(viewLifecycleOwner,Observer
+                {it1 ->
+                    val analysisToDetail = Bundle()
+                    val infoAboutAnalysis = arrayListOf<String>()
                     it1[0].labels?.forEach {
                         infoAboutAnalysis.add(it.name + " - С уверенностью в " + it.confidence + "%")
                     }
@@ -96,7 +104,8 @@ class LoadCatFragment : Fragment() {
                     )
                     analysisToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
                     findNavController().navigate(R.id.navigation_detail, analysisToDetail)
-                }
+
+                })
             }
 
             override fun onCatLongClick(catInfo: CatInfo) {
@@ -133,13 +142,13 @@ class LoadCatFragment : Fragment() {
             uriCat = data?.data
             val file = File(uriCat?.path)
             val iStream = uriCat?.let { context?.contentResolver?.openInputStream(it) }
-            val inputData: ByteArray? = iStream?.let { loadCatViewModel.getBytes(it) }
+            val inputData: ByteArray? = iStream?.let { getBytes(it) }
             val requestFile: RequestBody? =
                 inputData?.toRequestBody("image/jpeg".toMediaTypeOrNull())
             val filePart =
                 requestFile?.let { MultipartBody.Part.createFormData("file", file.name, it) }
             if (filePart != null) {
-                loadCatViewModel.postLoadCat(filePart)
+                loadCatViewModel.onActivityResult(filePart)
             }
         } else if (resultCode == Activity.RESULT_OK && requestCode == 1) {
             val extras = data?.extras
@@ -154,13 +163,38 @@ class LoadCatFragment : Fragment() {
                 requestFile?.let {
                     MultipartBody.Part.createFormData(
                         "file",
-                        loadCatViewModel.createImageFile(),
+                        createImageFile(),
                         it
                     )
                 }
             if (filePart != null) {
-                loadCatViewModel.postLoadCat(filePart)
+                loadCatViewModel.onActivityResult(filePart)
             }
         }
     }
+
+    private fun getBytes(inputStream: InputStream): ByteArray? {
+        val byteBuffer = ByteArrayOutputStream()
+        val bufferSize = 1024
+        val buffer = ByteArray(bufferSize)
+        var len: Int
+        while (inputStream.read(buffer).also { len = it } != -1) {
+            byteBuffer.write(buffer, 0, len)
+        }
+        return byteBuffer.toByteArray()
+    }
+
+    private fun createImageFile(): String {
+        @SuppressLint("SimpleDateFormat") val timeStamp =
+            SimpleDateFormat("yyyyMMdd_HHmmss").format(
+                Date()
+            )
+        val imageFileName = "CamPhoto$timeStamp"
+        val image = File.createTempFile(
+            imageFileName,
+            ".jpg"
+        )
+        return image.absolutePath
+    }
+
 }
