@@ -89,8 +89,8 @@ class LoadCatFragment : Fragment() {
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
                 loadCatViewModel.analysisCat(catInfo.id)
-                loadCatViewModel.analysisCatLiveData.observe(viewLifecycleOwner,Observer
-                {it1 ->
+                loadCatViewModel.analysisCatLiveData.observe(viewLifecycleOwner, Observer
+                { it1 ->
                     val analysisToDetail = Bundle()
                     val infoAboutAnalysis = arrayListOf<String>()
                     it1[0].labels?.forEach {

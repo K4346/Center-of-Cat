@@ -5,17 +5,22 @@ import android.app.Dialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModel
+import com.example.centerofcat.app.ui.catFavourites.FavouritesCatsViewModel
+import com.example.centerofcat.app.ui.catList.CatsListViewModel
+import com.example.centerofcat.app.ui.loadCat.LoadCatViewModel
 import com.example.centerofcat.domain.entities.CatInfo
 
 class CatDialog(
     private val catInfo: CatInfo,
-    private val viewModel: BaseViewModel,
+    private val viewModel: ViewModel,
     private val tap: Int
 ) :
     DialogFragment() {
     private val catNames = arrayOf("Добавить в избранное", "Погладить")
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
         return activity?.let {
             if (tap == 2)
                 catNames[0] = "Удалить из избранного("
@@ -30,15 +35,18 @@ class CatDialog(
                         when (tap) {
                             1 -> {
                                 catInfo.id.let { it1 ->
+                                    viewModel as CatsListViewModel
                                     viewModel.addCatInFavourites(it1)
                                 }
                             }
                             2 -> {
                                 catInfo.id.let { it1 ->
+                                    viewModel as FavouritesCatsViewModel
                                     viewModel.deleteCatInFavourites(it1)
                                 }
                             }
                             3 -> {
+                                viewModel as LoadCatViewModel
                                 viewModel.deleteCatInLoads(catInfo.id)
                             }
                         }

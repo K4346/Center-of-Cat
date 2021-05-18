@@ -51,7 +51,6 @@ class FavouritesCatsFragment : Fragment() {
         })
     }
 
-
     private fun setOnClicksListeners(adapter: CatListAdapter) {
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {

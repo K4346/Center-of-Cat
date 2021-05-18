@@ -1,17 +1,66 @@
 package com.example.centerofcat.app.ui.catFavourites
 
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.paging.PagedList
+import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
+import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
+import com.example.centerofcat.data.repositories.CatRepositoryImpl
 import com.example.centerofcat.domain.entities.CatInfo
-import com.example.centerofcat.app.ui.BaseViewModel
+import com.example.centerofcat.domain.repositories.CatRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.Executors
 
-class FavouritesCatsViewModel : BaseViewModel() {
+class FavouritesCatsViewModel : ViewModel() {
+    var k = 0
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
+    val catPagedListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
 
-    override fun loadCats(
+    private fun makeChange(): PagedList<CatInfo> {
+        val dataSource =
+            CatPositionDataSource(this, 2)
+        val config: PagedList.Config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setPageSize(10)
+            .setInitialLoadSizeHint(10)
+            .build()
+
+        val pagedList: PagedList<CatInfo> = PagedList.Builder(dataSource, config)
+            .setNotifyExecutor(MainThreadExecutor())
+            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .build()
+        return pagedList
+    }
+//
+//    inner class CatListPositionDataSource(): PositionalDataSource<CatInfo>(){
+//        private var p = 0
+//        override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<CatInfo>) {
+//            p = 0
+//            loadCats(page = 0){
+//                callback.onResult(it, p)
+//            }
+//        }
+//        override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
+//            p += 1
+//            loadCats(page = p) {
+//                callback.onResult(it)
+//            }
+//        }
+//
+//    }
+
+    init {
+        if (k == 0) {
+            catPagedListInfo.value = makeChange()
+            k = 1
+        }
+    }
+
+    fun loadCats(
         page: Int,
-        order: String,
-        breed: String,
-        category: String,
         onComplete: ((List<CatInfo>) -> Unit)
     ) {
         val disposable = catRepositoryImpl.getFavouritesCat(
@@ -20,7 +69,6 @@ class FavouritesCatsViewModel : BaseViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                catList.addAll(it)
                 onComplete.invoke(it)
             }, {
             }
@@ -28,6 +76,19 @@ class FavouritesCatsViewModel : BaseViewModel() {
         compositeDisposable.add(disposable)
     }
 
+    fun deleteCatInFavourites(id: String) {
+        val disposable = catRepositoryImpl.deleteFavouritesCatObject(id).subscribeOn(
+            Schedulers.io()
+        )
+            .observeOn(AndroidSchedulers.mainThread()).subscribe({
+                catPagedListInfo.value = makeChange()
+            }, {
+            })
+        compositeDisposable.add(disposable)
+    }
 
-
+    override fun onCleared() {
+        super.onCleared()
+        compositeDisposable.dispose()
+    }
 }

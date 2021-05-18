@@ -1,13 +1,29 @@
 package com.example.centerofcat.app.ui.catList
 
 import androidx.lifecycle.MutableLiveData
-import androidx.paging.PositionalDataSource
-import com.example.centerofcat.app.ui.BaseViewModel
+import androidx.lifecycle.ViewModel
+import androidx.paging.PagedList
+import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
+import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
+import com.example.centerofcat.data.repositories.CatRepositoryImpl
 import com.example.centerofcat.domain.entities.CatInfo
+import com.example.centerofcat.domain.entities.FavouriteEntity
+import com.example.centerofcat.domain.repositories.CatRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.Executors
 
-class CatsListViewModel : BaseViewModel() {
+class CatsListViewModel : ViewModel() {
+
+    private var k = 0
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
+    val catPagedListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
+    var breedChoose: String = ""
+    var orderr: String = ""
+    var categoryy: String = ""
+
 
     val breedsCatLiveData: MutableLiveData<ArrayList<ArrayList<String>>> = MutableLiveData()
     private var nameArray = ArrayList<String>()
@@ -28,13 +44,50 @@ class CatsListViewModel : BaseViewModel() {
     )
     val categoriesIdCats = arrayListOf<String>("", "5", "15", "1", "14", "2", "4", "7")
 
+    fun makeChange(): PagedList<CatInfo> {
+        val dataSource =
+            CatPositionDataSource(this, 1)
+        val config: PagedList.Config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setPageSize(10)
+            .setInitialLoadSizeHint(10)
+            .build()
 
+        return PagedList.Builder(dataSource, config)
+            .setNotifyExecutor(MainThreadExecutor())
+            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .build()
+    }
 
-    override fun loadCats(
-        page: Int,
-        order: String,
-        breed: String,
-        category: String,
+    init {
+        if (k == 0) {
+            catPagedListInfo.value = makeChange()
+            k = 1
+        }
+    }
+
+//    inner class CatListPositionDataSource(): PositionalDataSource<CatInfo>(){
+//        private var p = 0
+//        override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<CatInfo>) {
+//            p = 0
+//            loadCats(page = 0){
+//                callback.onResult(it, p)
+//            }
+//        }
+//        override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
+//            p += 1
+//            loadCats(page = p) {
+//                callback.onResult(it)
+//            }
+//        }
+//
+//    }
+
+    fun loadCats(
+        page: Int = 0,
+        order: String = orderr,
+        breed: String = breedChoose,
+        category: String = categoryy,
         onComplete: ((List<CatInfo>) -> Unit)
     ) {
         val disposable = catRepositoryImpl.getCatObject(
@@ -46,7 +99,8 @@ class CatsListViewModel : BaseViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                catList.addAll(it)
+//                catList.addAll(it)
+//                loadCatLiveData.value=it
                 onComplete.invoke(it)
             }, {
             }
@@ -75,5 +129,21 @@ class CatsListViewModel : BaseViewModel() {
                 )
             compositeDisposable.add(disposable)
         }
+    }
+
+    fun addCatInFavourites(id: String) {
+        val favouriteEntity = FavouriteEntity(image_id = id)
+        val disposable = catRepositoryImpl.postFavouritesCatObject(favouriteEntity).subscribeOn(
+            Schedulers.io()
+        )
+            .observeOn(AndroidSchedulers.mainThread()).subscribe({
+            }, {
+            })
+        compositeDisposable.add(disposable)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        compositeDisposable.dispose()
     }
 }

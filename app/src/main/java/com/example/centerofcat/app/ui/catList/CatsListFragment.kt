@@ -22,7 +22,6 @@ import javax.inject.Inject
 
 class CatsListFragment : Fragment() {
     private lateinit var catsListViewModel: CatsListViewModel
-    private val catDiffUtilCallback = com.example.centerofcat.app.ui.adapters.CatDiffUtilCallback()
     private lateinit var binding: FragmentCatListBinding
 
     @Inject
@@ -50,6 +49,7 @@ class CatsListFragment : Fragment() {
         catsListViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
+
     }
 
     private fun setOnClicksListeners(adapter: CatListAdapter) {

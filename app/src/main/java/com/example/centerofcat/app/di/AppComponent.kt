@@ -11,7 +11,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [ApiFactoryModule::class, ApiServiceModule::class, AdapterModule::class])
 interface AppComponent {
-    fun provideApi(): ApiService
     fun injectCatRepository(catRepository: CatRepositoryImpl) //CatRepository?
     fun injectAdapter(fragment: CatsListFragment)
     fun injectAdapter(fragment: FavouritesCatsFragment)
