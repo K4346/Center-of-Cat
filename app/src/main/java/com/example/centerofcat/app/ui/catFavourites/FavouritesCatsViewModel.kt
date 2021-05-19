@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
@@ -23,6 +22,10 @@ class FavouritesCatsViewModel(application: Application) : AndroidViewModel(appli
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
     val catPagedListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
 
+    var flagForClick: Boolean = false
+    val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
+    val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
+
     private fun makeChange(): PagedList<CatInfo> {
         val dataSource =
             CatPositionDataSource(this, 2)
@@ -38,23 +41,6 @@ class FavouritesCatsViewModel(application: Application) : AndroidViewModel(appli
             .build()
         return pagedList
     }
-//
-//    inner class CatListPositionDataSource(): PositionalDataSource<CatInfo>(){
-//        private var p = 0
-//        override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<CatInfo>) {
-//            p = 0
-//            loadCats(page = 0){
-//                callback.onResult(it, p)
-//            }
-//        }
-//        override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
-//            p += 1
-//            loadCats(page = p) {
-//                callback.onResult(it)
-//            }
-//        }
-//
-//    }
 
     init {
         if (k == 0) {
@@ -91,7 +77,7 @@ class FavouritesCatsViewModel(application: Application) : AndroidViewModel(appli
         compositeDisposable.add(disposable)
     }
 
-    fun onCatClick(catInfo: CatInfo): Bundle {
+    fun onCatClick(catInfo: CatInfo) {
         val idToDetail = Bundle()
         val infoAboutCat = arrayListOf<String>(
             catInfo.image?.url.toString(),
@@ -99,16 +85,22 @@ class FavouritesCatsViewModel(application: Application) : AndroidViewModel(appli
             catInfo.created_at
         )
         idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        return idToDetail
+        flagForClick = true
+        bundleForDetailLiveData.value = idToDetail
+
     }
 
     fun onCatLongClick(
         catInfo: CatInfo,
         catsFavouritesCatsViewModel: FavouritesCatsViewModel,
         i: Int
-    ): CatDialog {
-        return CatDialog(catInfo, catsFavouritesCatsViewModel, i)
+    ) {
+        flagForClick = true
+        dialogLiveData.value = CatDialog(catInfo, catsFavouritesCatsViewModel, i)
+    }
 
+    fun changeJumpFlag() {
+        flagForClick = false
     }
 
     override fun onCleared() {

@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
@@ -26,7 +25,12 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
     val catPagedListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
     val analysisCatLiveData: MutableLiveData<List<AnalysisCat>> = MutableLiveData()
-    var liveDataForNotPost: MutableLiveData<Boolean> = MutableLiveData()
+    var messageLiveData: MutableLiveData<String> = MutableLiveData()
+
+    var flagForClick: Boolean = false
+    val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
+    val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
+
 
     private fun makeChange(): PagedList<CatInfo> {
         val dataSource =
@@ -68,26 +72,6 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             )
         compositeDisposable.add(disposable)
     }
-//    inner class CatListPositionDataSource() : PositionalDataSource<CatInfo>() {
-//        private var p = 0
-//        override fun loadInitial(
-//            params: LoadInitialParams,
-//            callback: LoadInitialCallback<CatInfo>
-//        ) {
-//            p = 0
-//            loadCats(page = 0) {
-//                callback.onResult(it, p)
-//            }
-//        }
-//
-//        override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
-//            p += 1
-//            loadCats(page = p) {
-//                callback.onResult(it)
-//            }
-//        }
-//
-//    }
 
     fun analysisCat(
         id: String,
@@ -109,10 +93,10 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
 
-                liveDataForNotPost.value = true
+                messageLiveData.value = "Кот загрузился"
                 catPagedListInfo.value = makeChange()
             }, {
-                liveDataForNotPost.value = false
+                messageLiveData.value = "На фото нет кота"
             })
         compositeDisposable.add(disposable)
     }
@@ -130,7 +114,7 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
         compositeDisposable.add(disposable)
     }
 
-    fun onCatClick(catInfo: CatInfo, listAnalysisCat: List<AnalysisCat>): Bundle {
+    fun onCatClick(catInfo: CatInfo, listAnalysisCat: List<AnalysisCat>) {
         val analysisToDetail = Bundle()
         val infoAboutAnalysis = arrayListOf<String>()
         listAnalysisCat[0].labels?.forEach {
@@ -143,16 +127,21 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             ""
         )
         analysisToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        return analysisToDetail
+        flagForClick = true
+        bundleForDetailLiveData.value = analysisToDetail
     }
 
     fun onCatLongClick(
         catInfo: CatInfo,
         loadCatViewModel: LoadCatViewModel,
         i: Int
-    ): CatDialog {
-        return CatDialog(catInfo, loadCatViewModel, i)
+    ) {
+        flagForClick = true
+        dialogLiveData.value = CatDialog(catInfo, loadCatViewModel, i)
+    }
 
+    fun changeJumpFlag() {
+        flagForClick = false
     }
 
     override fun onCleared() {

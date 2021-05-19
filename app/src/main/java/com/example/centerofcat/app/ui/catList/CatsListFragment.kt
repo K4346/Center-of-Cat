@@ -12,7 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
-import com.example.centerofcat.app.app
+import com.example.centerofcat.app.App
+import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.databinding.FragmentCatListBinding
 import com.example.centerofcat.domain.entities.CatInfo
@@ -25,7 +26,7 @@ class CatsListFragment : Fragment() {
 
     @Inject
     lateinit var adapter: CatListAdapter
-    val app = app()
+    val app = App()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,7 +41,24 @@ class CatsListFragment : Fragment() {
         catsListViewModel =
             ViewModelProvider(this).get(CatsListViewModel::class.java)
         app.component.injectAdapter(this)
+        setClickObservers()
         adapterSettings()
+    }
+
+    private fun setClickObservers() {
+        catsListViewModel.bundleForDetailLiveData.observe(viewLifecycleOwner, {
+            if (catsListViewModel.flagForClick) {
+                goToDetailFragment(it)
+            }
+            catsListViewModel.changeJumpFlag()
+        })
+        catsListViewModel.dialogLiveData.observe(viewLifecycleOwner, {
+            if (catsListViewModel.flagForClick) {
+                showDialog(it)
+            }
+            catsListViewModel.changeJumpFlag()
+
+        })
     }
 
     private fun adapterSettings() {
@@ -57,21 +75,28 @@ class CatsListFragment : Fragment() {
     private fun setOnClicksListeners(adapter: CatListAdapter) {
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
-                findNavController().navigate(
-                    R.id.navigation_detail,
-                    catsListViewModel.onCatClick(catInfo)
-                )
+                catsListViewModel.onCatClick(catInfo)
             }
 
             override fun onCatLongClick(catInfo: CatInfo) {
-                activity?.supportFragmentManager.let {
-                    if (it != null) {
-                        catsListViewModel.setOnCatLongClick(catInfo, catsListViewModel, 1)
-                            .show(it, "dialog")
-                    }
-                }
+                catsListViewModel.setOnCatLongClick(catInfo, catsListViewModel, 1)
             }
         }
+    }
+
+    private fun showDialog(catDialog: CatDialog) {
+        activity?.supportFragmentManager.let {
+            if (it != null) {
+                catDialog.show(it, "dialog")
+            }
+        }
+    }
+
+    private fun goToDetailFragment(bundle: Bundle) {
+        findNavController().navigate(
+            R.id.navigation_detail,
+            bundle
+        )
     }
 
     private fun addFilters() {

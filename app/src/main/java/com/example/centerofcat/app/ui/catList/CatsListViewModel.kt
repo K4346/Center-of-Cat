@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
@@ -19,6 +18,9 @@ import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.Executors
 
 class CatsListViewModel(application: Application) : AndroidViewModel(application) {
+    var flagForClick: Boolean = false
+    val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
+    val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
 
     private var k = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -34,6 +36,7 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
     val idsCats = arrayListOf<String>("")
     val breedsCats = arrayListOf<String>("")
     val order = arrayOf("", "ASC", "DESC", "RAND")
+
     val categoriesCats = arrayListOf<String>(
         "",
         "boxes",
@@ -67,23 +70,6 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
             k = 1
         }
     }
-
-//    inner class CatListPositionDataSource(): PositionalDataSource<CatInfo>(){
-//        private var p = 0
-//        override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<CatInfo>) {
-//            p = 0
-//            loadCats(page = 0){
-//                callback.onResult(it, p)
-//            }
-//        }
-//        override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
-//            p += 1
-//            loadCats(page = p) {
-//                callback.onResult(it)
-//            }
-//        }
-//
-//    }
 
     fun loadCats(
         page: Int = 0,
@@ -142,20 +128,26 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         compositeDisposable.add(disposable)
     }
 
-    fun onCatClick(catInfo: CatInfo): Bundle {
+    fun onCatClick(catInfo: CatInfo) {
         val idToDetail = Bundle()
         val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, "")
         idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        return idToDetail
+        flagForClick = true
+        bundleForDetailLiveData.value = idToDetail
+
     }
 
     fun setOnCatLongClick(
         catInfo: CatInfo,
         catsListViewModel: CatsListViewModel,
         i: Int
-    ): CatDialog {
-        return CatDialog(catInfo, catsListViewModel, i)
+    ) {
+        flagForClick = true
+        dialogLiveData.value = CatDialog(catInfo, catsListViewModel, i)
+    }
 
+    fun changeJumpFlag() {
+        flagForClick = false
     }
 
     override fun onCleared() {

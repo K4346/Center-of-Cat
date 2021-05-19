@@ -1,6 +1,6 @@
 package com.example.centerofcat.data.repositories
 
-import com.example.centerofcat.app.app
+import com.example.centerofcat.app.App
 import com.example.centerofcat.data.api.services.ApiService
 import com.example.centerofcat.domain.entities.BreedCatInfo
 import com.example.centerofcat.domain.entities.CatInfo
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class CatRepositoryImpl : CatRepository {
     @Inject
     lateinit var apiService: ApiService
- val app=app()
+ val app=App()
     override fun getCatObject(
         page: Int,
         order: String,
@@ -24,7 +24,7 @@ class CatRepositoryImpl : CatRepository {
         category: String
     ): Single<List<CatInfo>> {
 
-//        val apiService = app.component.provideApi()
+//        val apiService = App.component.provideApi()
         app.component.injectCatRepository(this)
         return apiService.getCat(page = page, order = order, breed = breed_ids, category = category)
     }

@@ -18,7 +18,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
-import com.example.centerofcat.app.app
+import com.example.centerofcat.app.App
+import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.databinding.FragmentLoadBinding
 import com.example.centerofcat.domain.entities.CatInfo
@@ -41,7 +42,7 @@ class LoadCatFragment : Fragment() {
 
     @Inject
     lateinit var adapter: CatListAdapter
-    val app = app()
+    val app = App()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,19 +64,32 @@ class LoadCatFragment : Fragment() {
         binding.camera.setOnClickListener {
             dispatchTakePictureIntent()
         }
+        setClickObservers()
         app.component.injectAdapter(this)
         adapterSettings()
-        loadCatViewModel.liveDataForNotPost.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                Toast.makeText(context, "Кот загрузился", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "На фото нет кота", Toast.LENGTH_SHORT).show()
-            }
+        loadCatViewModel.messageLiveData.observe(viewLifecycleOwner, Observer {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         })
     }
 
     private fun actionBarSetText() {
         binding.include8.actionBarTab.text = "Загрузить Котиков"
+    }
+
+
+    private fun goToDetailFragment(bundle: Bundle) {
+        findNavController().navigate(
+            R.id.navigation_detail,
+            bundle
+        )
+    }
+
+    private fun showDialog(catDialog: CatDialog) {
+        activity?.supportFragmentManager.let {
+            if (it != null) {
+                catDialog.show(it, "dialog")
+            }
+        }
     }
 
     private fun adapterSettings() {
@@ -88,6 +102,22 @@ class LoadCatFragment : Fragment() {
         })
     }
 
+    private fun setClickObservers() {
+        loadCatViewModel.bundleForDetailLiveData.observe(viewLifecycleOwner, {
+            if (loadCatViewModel.flagForClick) {
+                goToDetailFragment(it)
+            }
+            loadCatViewModel.changeJumpFlag()
+        })
+        loadCatViewModel.dialogLiveData.observe(viewLifecycleOwner, {
+            if (loadCatViewModel.flagForClick) {
+                showDialog(it)
+            }
+            loadCatViewModel.changeJumpFlag()
+
+        })
+    }
+
 
     private fun setOnClicksListener(adapter: CatListAdapter) {
 
@@ -96,20 +126,14 @@ class LoadCatFragment : Fragment() {
                 loadCatViewModel.analysisCat(catInfo.id)
                 loadCatViewModel.analysisCatLiveData.observe(viewLifecycleOwner, Observer
                 { it1 ->
-                    findNavController().navigate(
-                        R.id.navigation_detail,
-                        loadCatViewModel.onCatClick(catInfo, it1)
-                    )
+                    loadCatViewModel.onCatClick(catInfo, it1)
+
                 })
             }
 
             override fun onCatLongClick(catInfo: CatInfo) {
-                activity?.supportFragmentManager.let {
-                    if (it != null) {
-                        loadCatViewModel.onCatLongClick(catInfo, loadCatViewModel, 3)
-                            .show(it, "dialog")
-                    }
-                }
+                loadCatViewModel.onCatLongClick(catInfo, loadCatViewModel, 3)
+
             }
         }
     }
@@ -141,9 +165,7 @@ class LoadCatFragment : Fragment() {
                 inputData?.toRequestBody("image/jpeg".toMediaTypeOrNull())
             val filePart =
                 requestFile?.let { MultipartBody.Part.createFormData("file", file.name, it) }
-            if (filePart != null) {
-                loadCatViewModel.onActivityResult(filePart)
-            }
+            postCat(filePart)
         } else if (resultCode == Activity.RESULT_OK && requestCode == 1) {
             val extras = data?.extras
             val imageBitmap = extras!!["data"] as Bitmap?
@@ -161,9 +183,13 @@ class LoadCatFragment : Fragment() {
                         it
                     )
                 }
-            if (filePart != null) {
-                loadCatViewModel.onActivityResult(filePart)
-            }
+            postCat(filePart)
+        }
+    }
+
+    private fun postCat(filePart: MultipartBody.Part?) {
+        if (filePart != null) {
+            loadCatViewModel.onActivityResult(filePart)
         }
     }
 
