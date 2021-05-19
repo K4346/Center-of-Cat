@@ -8,19 +8,25 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagedList
+import androidx.paging.PositionalDataSource
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.app.App
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
+import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.databinding.FragmentFavoritesBinding
 import com.example.centerofcat.domain.entities.CatInfo
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class FavouritesCatsFragment : Fragment() {
 
     private lateinit var catsFavouritesCatsViewModel: FavouritesCatsViewModel
     private lateinit var binding: FragmentFavoritesBinding
+    private lateinit var callBackInitial: PositionalDataSource.LoadInitialCallback<CatInfo>
+    private lateinit var callBackRange: PositionalDataSource.LoadRangeCallback<CatInfo>
 
     @Inject
     lateinit var adapter: CatListAdapter
@@ -41,9 +47,64 @@ class FavouritesCatsFragment : Fragment() {
         catsFavouritesCatsViewModel =
             ViewModelProvider(this).get(FavouritesCatsViewModel::class.java)
         app.component.injectAdapter(this)
+        setCatListsObservers()
+        catsFavouritesCatsViewModel.firstOn()
         setClickObservers()
-        setOnClicksListeners(adapter)
         adapterSettings()
+    }
+
+    private fun makeDataSource(): PositionalDataSource<CatInfo> {
+        val dataSource = object : PositionalDataSource<CatInfo>() {
+            private var p = 0
+            override fun loadInitial(
+                params: LoadInitialParams,
+                callback: LoadInitialCallback<CatInfo>
+            ) {
+                p = 0
+                callBackInitial = callback
+                catsFavouritesCatsViewModel.loadCats(page = 0)
+
+            }
+
+            override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
+                p += 1
+                callBackRange = callback
+                catsFavouritesCatsViewModel.loadCats(page = p)
+            }
+        }
+        return dataSource
+    }
+
+    private fun makeChange(dataSource: PositionalDataSource<CatInfo>): PagedList<CatInfo> {
+        val config: PagedList.Config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setPageSize(10)
+            .setInitialLoadSizeHint(10)
+            .build()
+
+        val pagedList: PagedList<CatInfo> = PagedList.Builder(dataSource, config)
+            .setNotifyExecutor(MainThreadExecutor())
+            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .build()
+        return pagedList
+    }
+
+    private fun setCatListsObservers() {
+        catsFavouritesCatsViewModel.catListInitial.observe(viewLifecycleOwner, {
+            if (catsFavouritesCatsViewModel.flagInitial) {
+                callBackInitial.onResult(it, 0)
+            } else {
+                catsFavouritesCatsViewModel.changeInitialFlag(true)
+            }
+
+        })
+        catsFavouritesCatsViewModel.catListRange.observe(viewLifecycleOwner, {
+            if (catsFavouritesCatsViewModel.flagRange) {
+                callBackRange.onResult(it)
+            } else {
+                catsFavouritesCatsViewModel.changeRangeFlag(true)
+            }
+        })
     }
 
     private fun actionBarSetText() {
@@ -51,11 +112,17 @@ class FavouritesCatsFragment : Fragment() {
     }
 
     private fun adapterSettings() {
+        setOnClicksListeners(adapter)
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatFavouritesList.layoutManager = layoutManager
         binding.rvCatFavouritesList.adapter = adapter
-        catsFavouritesCatsViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it)
+        catsFavouritesCatsViewModel.refreshView.observe(viewLifecycleOwner, Observer {
+            if (catsFavouritesCatsViewModel.flagRefresh) {
+                adapter.submitList(makeChange(makeDataSource()))
+            } else {
+                catsFavouritesCatsViewModel.changeRefreshFlag(true)
+            }
+
         })
     }
 
@@ -64,17 +131,18 @@ class FavouritesCatsFragment : Fragment() {
             if (catsFavouritesCatsViewModel.flagForClick) {
                 goToDetailFragment(it)
             }
-            catsFavouritesCatsViewModel.changeJumpFlag()
+            catsFavouritesCatsViewModel.changeJumpFlag(false)
         })
 
         catsFavouritesCatsViewModel.dialogLiveData.observe(viewLifecycleOwner, {
             if (catsFavouritesCatsViewModel.flagForClick) {
                 showDialog(it)
             }
-            catsFavouritesCatsViewModel.changeJumpFlag()
+            catsFavouritesCatsViewModel.changeJumpFlag(false)
 
         })
     }
+
 
     private fun goToDetailFragment(bundle: Bundle) {
 

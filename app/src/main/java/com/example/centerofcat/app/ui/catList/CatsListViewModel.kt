@@ -4,10 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.paging.PagedList
 import com.example.centerofcat.app.ui.CatDialog
-import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
-import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.data.repositories.CatRepositoryImpl
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.domain.entities.FavouriteEntity
@@ -15,17 +12,22 @@ import com.example.centerofcat.domain.repositories.CatRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.Executors
 
 class CatsListViewModel(application: Application) : AndroidViewModel(application) {
     var flagForClick: Boolean = false
     val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
     val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
+    val refreshView: MutableLiveData<Boolean> = MutableLiveData()
+
+    var catListInitial: MutableLiveData<List<CatInfo>> = MutableLiveData()
+    var catListRange: MutableLiveData<List<CatInfo>> = MutableLiveData()
+    var flagInitial: Boolean = true
+    var flagRange: Boolean = true
+    var flagRefresh: Boolean = true
 
     private var k = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
-    val catPagedListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
     var breedChoose: String = ""
     var orderr: String = ""
     var categoryy: String = ""
@@ -49,24 +51,9 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
     )
     val categoriesIdCats = arrayListOf<String>("", "5", "15", "1", "14", "2", "4", "7")
 
-    fun makeChange(): PagedList<CatInfo> {
-        val dataSource =
-            CatPositionDataSource(this, 1)
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(10)
-            .setInitialLoadSizeHint(10)
-            .build()
-
-        return PagedList.Builder(dataSource, config)
-            .setNotifyExecutor(MainThreadExecutor())
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
-            .build()
-    }
-
-    init {
+    fun firstOn() {
         if (k == 0) {
-            catPagedListInfo.value = makeChange()
+            refreshView.value = true
             k = 1
         }
     }
@@ -76,7 +63,6 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         order: String = orderr,
         breed: String = breedChoose,
         category: String = categoryy,
-        onComplete: ((List<CatInfo>) -> Unit)
     ) {
         val disposable = catRepositoryImpl.getCatObject(
             page = page,
@@ -87,12 +73,17 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                onComplete.invoke(it)
+                if (page == 0) {
+                    catListInitial.value = it
+                } else {
+                    catListRange.value = it
+                }
             }, {
             }
             )
         compositeDisposable.add(disposable)
     }
+
 
     fun loadBreedsCats(
     ) {
@@ -119,9 +110,9 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
 
     fun addCatInFavourites(id: String) {
         val favouriteEntity = FavouriteEntity(image_id = id)
-        val disposable = catRepositoryImpl.postFavouritesCatObject(favouriteEntity).subscribeOn(
-            Schedulers.io()
-        )
+        val disposable = catRepositoryImpl
+            .postFavouritesCatObject(favouriteEntity)
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
             }, {
             })
@@ -132,9 +123,11 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         val idToDetail = Bundle()
         val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, "")
         idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        flagForClick = true
+        changeJumpFlag(true)
+        changeInitialFlag(false)
+        changeRangeFlag(false)
+        changeRefreshFlag(false)
         bundleForDetailLiveData.value = idToDetail
-
     }
 
     fun setOnCatLongClick(
@@ -142,12 +135,25 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         catsListViewModel: CatsListViewModel,
         i: Int
     ) {
-        flagForClick = true
+        changeJumpFlag(true)
         dialogLiveData.value = CatDialog(catInfo, catsListViewModel, i)
     }
 
-    fun changeJumpFlag() {
-        flagForClick = false
+    fun changeJumpFlag(flag: Boolean) {
+        flagForClick = flag
+    }
+
+    fun changeInitialFlag(flag: Boolean) {
+        flagInitial = flag
+    }
+
+    fun changeRangeFlag(flag: Boolean) {
+        flagRange = flag
+    }
+
+    fun changeRefreshFlag(flag: Boolean) {
+        flagRefresh = flag
+
     }
 
     override fun onCleared() {

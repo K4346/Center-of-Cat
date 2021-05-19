@@ -16,11 +16,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagedList
+import androidx.paging.PositionalDataSource
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.app.App
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
+import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.databinding.FragmentLoadBinding
 import com.example.centerofcat.domain.entities.CatInfo
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -32,6 +35,7 @@ import java.io.File
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
@@ -39,6 +43,8 @@ class LoadCatFragment : Fragment() {
     var uriCat: Uri? = null
     private lateinit var loadCatViewModel: LoadCatViewModel
     private lateinit var binding: FragmentLoadBinding
+    private lateinit var callBackInitial: PositionalDataSource.LoadInitialCallback<CatInfo>
+    private lateinit var callBackRange: PositionalDataSource.LoadRangeCallback<CatInfo>
 
     @Inject
     lateinit var adapter: CatListAdapter
@@ -66,9 +72,19 @@ class LoadCatFragment : Fragment() {
         }
         setClickObservers()
         app.component.injectAdapter(this)
+        setCatListsObservers()
+        loadCatViewModel.firstOn()
         adapterSettings()
+        setMessageLiveData()
+    }
+
+    private fun setMessageLiveData() {
         loadCatViewModel.messageLiveData.observe(viewLifecycleOwner, Observer {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            if (loadCatViewModel.flagToast) {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            } else {
+                loadCatViewModel.changeToastFlag(true)
+            }
         })
     }
 
@@ -76,6 +92,61 @@ class LoadCatFragment : Fragment() {
         binding.include8.actionBarTab.text = "Загрузить Котиков"
     }
 
+    private fun makeDataSource(): PositionalDataSource<CatInfo> {
+        val dataSource = object : PositionalDataSource<CatInfo>() {
+            private var p = 0
+            override fun loadInitial(
+                params: LoadInitialParams,
+                callback: LoadInitialCallback<CatInfo>
+            ) {
+                p = 0
+                callBackInitial = callback
+                loadCatViewModel.loadCats(page = 0)
+
+            }
+
+            override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
+                p += 1
+                callBackRange = callback
+                loadCatViewModel.loadCats(page = p)
+            }
+        }
+        return dataSource
+    }
+
+    private fun makeChange(dataSource: PositionalDataSource<CatInfo>): PagedList<CatInfo> {
+
+        val config: PagedList.Config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setPageSize(10)
+            .setInitialLoadSizeHint(10)
+            .build()
+
+        val pagedList: PagedList<CatInfo> = PagedList.Builder(dataSource, config)
+            .setNotifyExecutor(MainThreadExecutor())
+            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .build()
+        return pagedList
+    }
+
+    private fun setCatListsObservers() {
+        loadCatViewModel.catListInitial.observe(viewLifecycleOwner, {
+            if (loadCatViewModel.flagInitial) {
+                callBackInitial.onResult(it, 0)
+            } else {
+                loadCatViewModel.changeInitialFlag(true)
+            }
+
+        })
+        loadCatViewModel.catListRange.observe(viewLifecycleOwner, {
+            if (loadCatViewModel.flagRange) {
+                callBackRange.onResult(it)
+            } else {
+                loadCatViewModel.changeRangeFlag(true)
+            }
+
+        })
+    }
 
     private fun goToDetailFragment(bundle: Bundle) {
         findNavController().navigate(
@@ -97,8 +168,13 @@ class LoadCatFragment : Fragment() {
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatLoadList.layoutManager = layoutManager
         binding.rvCatLoadList.adapter = adapter
-        loadCatViewModel.catPagedListInfo.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it)
+        loadCatViewModel.refreshView.observe(viewLifecycleOwner, Observer {
+            if (loadCatViewModel.flagRefresh) {
+                adapter.submitList(makeChange(makeDataSource()))
+            } else {
+                loadCatViewModel.changeRefreshFlag(true)
+            }
+
         })
     }
 
@@ -107,13 +183,13 @@ class LoadCatFragment : Fragment() {
             if (loadCatViewModel.flagForClick) {
                 goToDetailFragment(it)
             }
-            loadCatViewModel.changeJumpFlag()
+            loadCatViewModel.changeJumpFlag(false)
         })
         loadCatViewModel.dialogLiveData.observe(viewLifecycleOwner, {
             if (loadCatViewModel.flagForClick) {
                 showDialog(it)
             }
-            loadCatViewModel.changeJumpFlag()
+            loadCatViewModel.changeJumpFlag(false)
 
         })
     }

@@ -4,10 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.paging.PagedList
 import com.example.centerofcat.app.ui.CatDialog
-import com.example.centerofcat.app.ui.adapters.CatPositionDataSource
-import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.data.repositories.CatRepositoryImpl
 import com.example.centerofcat.domain.entities.CatInfo
 import com.example.centerofcat.domain.entities.analysis.AnalysisCat
@@ -17,47 +14,33 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
-import java.util.concurrent.Executors
 
 class LoadCatViewModel(application: Application) : AndroidViewModel(application) {
     var k = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
-    val catPagedListInfo: MutableLiveData<PagedList<CatInfo>> = MutableLiveData()
     val analysisCatLiveData: MutableLiveData<List<AnalysisCat>> = MutableLiveData()
     var messageLiveData: MutableLiveData<String> = MutableLiveData()
-
+    var flagToast: Boolean = true
     var flagForClick: Boolean = false
     val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
     val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
+    val refreshView: MutableLiveData<Boolean> = MutableLiveData()
+    var catListInitial: MutableLiveData<List<CatInfo>> = MutableLiveData()
+    var catListRange: MutableLiveData<List<CatInfo>> = MutableLiveData()
+    var flagInitial: Boolean = true
+    var flagRange: Boolean = true
+    var flagRefresh: Boolean = true
 
-
-    private fun makeChange(): PagedList<CatInfo> {
-        val dataSource =
-            CatPositionDataSource(this, 3)
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(10)
-            .setInitialLoadSizeHint(10)
-            .build()
-
-        val pagedList: PagedList<CatInfo> = PagedList.Builder(dataSource, config)
-            .setNotifyExecutor(MainThreadExecutor())
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
-            .build()
-        return pagedList
-    }
-
-    init {
+    fun firstOn() {
         if (k == 0) {
-            catPagedListInfo.value = makeChange()
+            refreshView.value = true
             k = 1
         }
     }
 
     fun loadCats(
         page: Int = 0,
-        onComplete: ((List<CatInfo>) -> Unit)
     ) {
         val disposable = catRepositoryImpl.getLoadsCatObject(
             page = page
@@ -66,7 +49,11 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             .observeOn(AndroidSchedulers.mainThread())
 
             .subscribe({
-                onComplete.invoke(it)
+                if (page == 0) {
+                    catListInitial.value = it
+                } else {
+                    catListRange.value = it
+                }
             }, {
             }
             )
@@ -94,7 +81,7 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
 
                 messageLiveData.value = "Кот загрузился"
-                catPagedListInfo.value = makeChange()
+                refreshView.value = true
             }, {
                 messageLiveData.value = "На фото нет кота"
             })
@@ -106,10 +93,9 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-
-                catPagedListInfo.value = makeChange()
+                refreshView.value = true
             }, {
-                catPagedListInfo.value = makeChange()
+                refreshView.value = true
             })
         compositeDisposable.add(disposable)
     }
@@ -127,7 +113,11 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             ""
         )
         analysisToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        flagForClick = true
+        changeJumpFlag(true)
+        changeInitialFlag(false)
+        changeRangeFlag(false)
+        changeRefreshFlag(false)
+        changeToastFlag(false)
         bundleForDetailLiveData.value = analysisToDetail
     }
 
@@ -136,12 +126,30 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
         loadCatViewModel: LoadCatViewModel,
         i: Int
     ) {
-        flagForClick = true
+        changeJumpFlag(true)
         dialogLiveData.value = CatDialog(catInfo, loadCatViewModel, i)
     }
 
-    fun changeJumpFlag() {
-        flagForClick = false
+    fun changeJumpFlag(flag: Boolean) {
+        flagForClick = flag
+    }
+
+    fun changeInitialFlag(flag: Boolean) {
+        flagInitial = flag
+    }
+
+    fun changeRangeFlag(flag: Boolean) {
+        flagRange = flag
+    }
+
+    fun changeRefreshFlag(flag: Boolean) {
+        flagRefresh = flag
+
+    }
+
+    fun changeToastFlag(flag: Boolean) {
+        flagToast = flag
+
     }
 
     override fun onCleared() {
