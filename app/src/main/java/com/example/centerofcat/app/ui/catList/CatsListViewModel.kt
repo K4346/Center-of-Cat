@@ -14,16 +14,15 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class CatsListViewModel(application: Application) : AndroidViewModel(application) {
-    var flagForClick: Boolean = false
     val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
     val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
     val refreshView: MutableLiveData<Boolean> = MutableLiveData()
-
     var catListInitial: MutableLiveData<List<CatInfo>> = MutableLiveData()
     var catListRange: MutableLiveData<List<CatInfo>> = MutableLiveData()
-    var flagInitial: Boolean = true
-    var flagRange: Boolean = true
+    var flagInitial: Boolean = false
+    var flagRange: Boolean = false
     var flagRefresh: Boolean = true
+    var flagForClick: Boolean = false
 
     private var k = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -123,10 +122,7 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         val idToDetail = Bundle()
         val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, "")
         idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        changeJumpFlag(true)
-        changeInitialFlag(false)
-        changeRangeFlag(false)
-        changeRefreshFlag(false)
+        changeFlagForClick(true)
         bundleForDetailLiveData.value = idToDetail
     }
 
@@ -135,11 +131,11 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         catsListViewModel: CatsListViewModel,
         i: Int
     ) {
-        changeJumpFlag(true)
+        changeFlagForClick(true)
         dialogLiveData.value = CatDialog(catInfo, catsListViewModel, i)
     }
 
-    fun changeJumpFlag(flag: Boolean) {
+    fun changeFlagForClick(flag: Boolean) {
         flagForClick = flag
     }
 

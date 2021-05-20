@@ -62,13 +62,14 @@ class FavouritesCatsFragment : Fragment() {
             ) {
                 p = 0
                 callBackInitial = callback
+                catsFavouritesCatsViewModel.changeInitialFlag(true)
                 catsFavouritesCatsViewModel.loadCats(page = 0)
-
             }
 
             override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
                 p += 1
                 callBackRange = callback
+                catsFavouritesCatsViewModel.changeRangeFlag(true)
                 catsFavouritesCatsViewModel.loadCats(page = p)
             }
         }
@@ -93,16 +94,15 @@ class FavouritesCatsFragment : Fragment() {
         catsFavouritesCatsViewModel.catListInitial.observe(viewLifecycleOwner, {
             if (catsFavouritesCatsViewModel.flagInitial) {
                 callBackInitial.onResult(it, 0)
-            } else {
-                catsFavouritesCatsViewModel.changeInitialFlag(true)
+                catsFavouritesCatsViewModel.changeInitialFlag(false)
             }
+
 
         })
         catsFavouritesCatsViewModel.catListRange.observe(viewLifecycleOwner, {
             if (catsFavouritesCatsViewModel.flagRange) {
                 callBackRange.onResult(it)
-            } else {
-                catsFavouritesCatsViewModel.changeRangeFlag(true)
+                catsFavouritesCatsViewModel.changeRangeFlag(false)
             }
         })
     }
@@ -119,10 +119,8 @@ class FavouritesCatsFragment : Fragment() {
         catsFavouritesCatsViewModel.refreshView.observe(viewLifecycleOwner, Observer {
             if (catsFavouritesCatsViewModel.flagRefresh) {
                 adapter.submitList(makeChange(makeDataSource()))
-            } else {
-                catsFavouritesCatsViewModel.changeRefreshFlag(true)
+                catsFavouritesCatsViewModel.changeRefreshFlag(false)
             }
-
         })
     }
 
@@ -130,22 +128,19 @@ class FavouritesCatsFragment : Fragment() {
         catsFavouritesCatsViewModel.bundleForDetailLiveData.observe(viewLifecycleOwner, {
             if (catsFavouritesCatsViewModel.flagForClick) {
                 goToDetailFragment(it)
+                catsFavouritesCatsViewModel.changeFlagForClick(false)
             }
-            catsFavouritesCatsViewModel.changeJumpFlag(false)
         })
 
         catsFavouritesCatsViewModel.dialogLiveData.observe(viewLifecycleOwner, {
             if (catsFavouritesCatsViewModel.flagForClick) {
                 showDialog(it)
+                catsFavouritesCatsViewModel.changeFlagForClick(false)
             }
-            catsFavouritesCatsViewModel.changeJumpFlag(false)
-
         })
     }
 
-
     private fun goToDetailFragment(bundle: Bundle) {
-
         findNavController().navigate(
             R.id.navigation_detail,
             bundle

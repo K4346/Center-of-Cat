@@ -20,8 +20,8 @@ class FavouritesCatsViewModel(application: Application) : AndroidViewModel(appli
     var catListInitial: MutableLiveData<List<CatInfo>> = MutableLiveData()
     var catListRange: MutableLiveData<List<CatInfo>> = MutableLiveData()
     var listOfCat: List<CatInfo> = arrayListOf()
-    var flagInitial: Boolean = true
-    var flagRange: Boolean = true
+    var flagInitial: Boolean = false
+    var flagRange: Boolean = false
     var flagRefresh: Boolean = true
     var flagForClick: Boolean = false
     val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
@@ -79,6 +79,7 @@ class FavouritesCatsViewModel(application: Application) : AndroidViewModel(appli
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
+                changeRefreshFlag(true)
                 refreshView.value = true
             }, {
             })
@@ -93,9 +94,7 @@ class FavouritesCatsViewModel(application: Application) : AndroidViewModel(appli
             catInfo.created_at
         )
         idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        changeJumpFlag(true)
-        changeInitialFlag(false)
-        changeRangeFlag(false)
+        changeFlagForClick(true)
         changeRefreshFlag(false)
         bundleForDetailLiveData.value = idToDetail
 
@@ -106,11 +105,11 @@ class FavouritesCatsViewModel(application: Application) : AndroidViewModel(appli
         catsFavouritesCatsViewModel: FavouritesCatsViewModel,
         i: Int
     ) {
-        changeJumpFlag(true)
+        changeFlagForClick(true)
         dialogLiveData.value = CatDialog(catInfo, catsFavouritesCatsViewModel, i)
     }
 
-    fun changeJumpFlag(flag: Boolean) {
+    fun changeFlagForClick(flag: Boolean) {
         flagForClick = flag
     }
 

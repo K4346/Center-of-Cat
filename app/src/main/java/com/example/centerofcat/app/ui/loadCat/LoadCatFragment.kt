@@ -82,8 +82,7 @@ class LoadCatFragment : Fragment() {
         loadCatViewModel.messageLiveData.observe(viewLifecycleOwner, Observer {
             if (loadCatViewModel.flagToast) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            } else {
-                loadCatViewModel.changeToastFlag(true)
+                loadCatViewModel.changeToastFlag(false)
             }
         })
     }
@@ -101,6 +100,7 @@ class LoadCatFragment : Fragment() {
             ) {
                 p = 0
                 callBackInitial = callback
+                loadCatViewModel.changeInitialFlag(true)
                 loadCatViewModel.loadCats(page = 0)
 
             }
@@ -108,6 +108,7 @@ class LoadCatFragment : Fragment() {
             override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
                 p += 1
                 callBackRange = callback
+                loadCatViewModel.changeRangeFlag(true)
                 loadCatViewModel.loadCats(page = p)
             }
         }
@@ -133,18 +134,14 @@ class LoadCatFragment : Fragment() {
         loadCatViewModel.catListInitial.observe(viewLifecycleOwner, {
             if (loadCatViewModel.flagInitial) {
                 callBackInitial.onResult(it, 0)
-            } else {
-                loadCatViewModel.changeInitialFlag(true)
+                loadCatViewModel.changeInitialFlag(false)
             }
-
         })
         loadCatViewModel.catListRange.observe(viewLifecycleOwner, {
             if (loadCatViewModel.flagRange) {
                 callBackRange.onResult(it)
-            } else {
-                loadCatViewModel.changeRangeFlag(true)
+                loadCatViewModel.changeRangeFlag(false)
             }
-
         })
     }
 
@@ -171,10 +168,8 @@ class LoadCatFragment : Fragment() {
         loadCatViewModel.refreshView.observe(viewLifecycleOwner, Observer {
             if (loadCatViewModel.flagRefresh) {
                 adapter.submitList(makeChange(makeDataSource()))
-            } else {
-                loadCatViewModel.changeRefreshFlag(true)
+                loadCatViewModel.changeRefreshFlag(false)
             }
-
         })
     }
 
@@ -182,15 +177,14 @@ class LoadCatFragment : Fragment() {
         loadCatViewModel.bundleForDetailLiveData.observe(viewLifecycleOwner, {
             if (loadCatViewModel.flagForClick) {
                 goToDetailFragment(it)
+                loadCatViewModel.changeFlagForClick(false)
             }
-            loadCatViewModel.changeJumpFlag(false)
         })
         loadCatViewModel.dialogLiveData.observe(viewLifecycleOwner, {
             if (loadCatViewModel.flagForClick) {
                 showDialog(it)
+                loadCatViewModel.changeFlagForClick(false)
             }
-            loadCatViewModel.changeJumpFlag(false)
-
         })
     }
 

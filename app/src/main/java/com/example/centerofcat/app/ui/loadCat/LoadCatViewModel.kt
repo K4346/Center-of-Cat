@@ -21,15 +21,15 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
     val analysisCatLiveData: MutableLiveData<List<AnalysisCat>> = MutableLiveData()
     var messageLiveData: MutableLiveData<String> = MutableLiveData()
-    var flagToast: Boolean = true
+    var flagToast: Boolean = false
     var flagForClick: Boolean = false
     val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
     val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
     val refreshView: MutableLiveData<Boolean> = MutableLiveData()
     var catListInitial: MutableLiveData<List<CatInfo>> = MutableLiveData()
     var catListRange: MutableLiveData<List<CatInfo>> = MutableLiveData()
-    var flagInitial: Boolean = true
-    var flagRange: Boolean = true
+    var flagInitial: Boolean = false
+    var flagRange: Boolean = false
     var flagRefresh: Boolean = true
 
     fun firstOn() {
@@ -79,10 +79,11 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-
+                changeToastFlag(true)
                 messageLiveData.value = "Кот загрузился"
                 refreshView.value = true
             }, {
+                changeToastFlag(true)
                 messageLiveData.value = "На фото нет кота"
             })
         compositeDisposable.add(disposable)
@@ -113,11 +114,8 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             ""
         )
         analysisToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        changeJumpFlag(true)
-        changeInitialFlag(false)
-        changeRangeFlag(false)
+        changeFlagForClick(true)
         changeRefreshFlag(false)
-        changeToastFlag(false)
         bundleForDetailLiveData.value = analysisToDetail
     }
 
@@ -126,11 +124,11 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
         loadCatViewModel: LoadCatViewModel,
         i: Int
     ) {
-        changeJumpFlag(true)
+        changeFlagForClick(true)
         dialogLiveData.value = CatDialog(catInfo, loadCatViewModel, i)
     }
 
-    fun changeJumpFlag(flag: Boolean) {
+    fun changeFlagForClick(flag: Boolean) {
         flagForClick = flag
     }
 

@@ -62,6 +62,7 @@ class CatsListFragment : Fragment() {
             ) {
                 p = 0
                 callBackInitial = callback
+                catsListViewModel.changeInitialFlag(true)
                 catsListViewModel.loadCats(page = 0)
 
             }
@@ -69,6 +70,7 @@ class CatsListFragment : Fragment() {
             override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
                 p += 1
                 callBackRange = callback
+                catsListViewModel.changeRangeFlag(true)
                 catsListViewModel.loadCats(page = p)
 
 
@@ -96,16 +98,14 @@ class CatsListFragment : Fragment() {
         catsListViewModel.catListInitial.observe(viewLifecycleOwner, {
             if (catsListViewModel.flagInitial) {
                 callBackInitial.onResult(it, 0)
-            } else {
-                catsListViewModel.changeInitialFlag(true)
+                catsListViewModel.changeInitialFlag(false)
             }
 
         })
         catsListViewModel.catListRange.observe(viewLifecycleOwner, {
             if (catsListViewModel.flagRange) {
                 callBackRange.onResult(it)
-            } else {
-                catsListViewModel.changeRangeFlag(true)
+                catsListViewModel.changeRangeFlag(false)
             }
 
         })
@@ -115,15 +115,14 @@ class CatsListFragment : Fragment() {
         catsListViewModel.bundleForDetailLiveData.observe(viewLifecycleOwner, {
             if (catsListViewModel.flagForClick) {
                 goToDetailFragment(it)
+                catsListViewModel.changeFlagForClick(false)
             }
-            catsListViewModel.changeJumpFlag(false)
         })
         catsListViewModel.dialogLiveData.observe(viewLifecycleOwner, {
             if (catsListViewModel.flagForClick) {
                 showDialog(it)
+                catsListViewModel.changeFlagForClick(false)
             }
-            catsListViewModel.changeJumpFlag(false)
-
         })
     }
 
@@ -136,8 +135,7 @@ class CatsListFragment : Fragment() {
         catsListViewModel.refreshView.observe(viewLifecycleOwner, Observer {
             if (catsListViewModel.flagRefresh) {
                 adapter.submitList(makeChange(makeDataSource()))
-            } else {
-                catsListViewModel.changeRefreshFlag(true)
+                catsListViewModel.changeRefreshFlag(false)
             }
         })
     }
@@ -225,6 +223,7 @@ class CatsListFragment : Fragment() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.breedChoose = catsListViewModel.idsCats[p2]
                     if (f1 != 0) {
+                        catsListViewModel.changeRefreshFlag(true)
                         catsListViewModel.refreshView.value = true
                     }
                     f1 = 1
@@ -246,6 +245,7 @@ class CatsListFragment : Fragment() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.categoryy = catsListViewModel.categoriesIdCats[p2]
                     if (f2 != 0) {
+                        catsListViewModel.changeRefreshFlag(true)
                         catsListViewModel.refreshView.value = true
                     }
                     f2 = 1
@@ -267,6 +267,7 @@ class CatsListFragment : Fragment() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.orderr = catsListViewModel.order[p2]
                     if (f3 != 0) {
+                        catsListViewModel.changeRefreshFlag(true)
                         catsListViewModel.refreshView.value = true
                     }
                     f3 = 1
