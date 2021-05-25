@@ -1,6 +1,7 @@
 package com.example.centerofcat.app.ui.catList
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.app.App
 import com.example.centerofcat.app.ui.CatDialog
+import com.example.centerofcat.app.ui.MainCatFragment
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.databinding.FragmentCatListBinding
@@ -24,15 +26,10 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
-class CatsListFragment : Fragment() {
+class CatsListFragment : MainCatFragment() {
     private lateinit var catsListViewModel: CatsListViewModel
     private lateinit var binding: FragmentCatListBinding
-    private lateinit var callBackInitial: PositionalDataSource.LoadInitialCallback<CatInfo>
-    private lateinit var callBackRange: PositionalDataSource.LoadRangeCallback<CatInfo>
 
-    @Inject
-    lateinit var adapter: CatListAdapter
-    val app = App()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -64,7 +61,6 @@ class CatsListFragment : Fragment() {
                 callBackInitial = callback
                 catsListViewModel.changeInitialFlag(true)
                 catsListViewModel.loadCats(page = 0)
-
             }
 
             override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
@@ -72,26 +68,9 @@ class CatsListFragment : Fragment() {
                 callBackRange = callback
                 catsListViewModel.changeRangeFlag(true)
                 catsListViewModel.loadCats(page = p)
-
-
             }
         }
         return dataSource
-    }
-
-    private fun makeChange(dataSource: PositionalDataSource<CatInfo>): PagedList<CatInfo> {
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(10)
-            .setInitialLoadSizeHint(10)
-            .build()
-
-        val pagedList: PagedList<CatInfo> = PagedList.Builder(dataSource, config)
-            .setNotifyExecutor(MainThreadExecutor())
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
-            .build()
-        return pagedList
     }
 
     private fun setCatListsObservers() {
@@ -100,14 +79,12 @@ class CatsListFragment : Fragment() {
                 callBackInitial.onResult(it, 0)
                 catsListViewModel.changeInitialFlag(false)
             }
-
         })
         catsListViewModel.catListRange.observe(viewLifecycleOwner, {
             if (catsListViewModel.flagRange) {
                 callBackRange.onResult(it)
                 catsListViewModel.changeRangeFlag(false)
             }
-
         })
     }
 
@@ -152,13 +129,6 @@ class CatsListFragment : Fragment() {
         }
     }
 
-    private fun showDialog(catDialog: CatDialog) {
-        activity?.supportFragmentManager.let {
-            if (it != null) {
-                catDialog.show(it, "dialog")
-            }
-        }
-    }
 
     private fun goToDetailFragment(bundle: Bundle) {
         findNavController().navigate(

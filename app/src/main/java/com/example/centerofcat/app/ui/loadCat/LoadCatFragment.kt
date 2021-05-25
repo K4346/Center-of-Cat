@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
 import com.example.centerofcat.app.App
 import com.example.centerofcat.app.ui.CatDialog
+import com.example.centerofcat.app.ui.MainCatFragment
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.databinding.FragmentLoadBinding
@@ -39,16 +40,10 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
-class LoadCatFragment : Fragment() {
+class LoadCatFragment : MainCatFragment() {
     var uriCat: Uri? = null
     private lateinit var loadCatViewModel: LoadCatViewModel
     private lateinit var binding: FragmentLoadBinding
-    private lateinit var callBackInitial: PositionalDataSource.LoadInitialCallback<CatInfo>
-    private lateinit var callBackRange: PositionalDataSource.LoadRangeCallback<CatInfo>
-
-    @Inject
-    lateinit var adapter: CatListAdapter
-    val app = App()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -115,21 +110,6 @@ class LoadCatFragment : Fragment() {
         return dataSource
     }
 
-    private fun makeChange(dataSource: PositionalDataSource<CatInfo>): PagedList<CatInfo> {
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(10)
-            .setInitialLoadSizeHint(10)
-            .build()
-
-        val pagedList: PagedList<CatInfo> = PagedList.Builder(dataSource, config)
-            .setNotifyExecutor(MainThreadExecutor())
-            .setFetchExecutor(Executors.newSingleThreadExecutor())
-            .build()
-        return pagedList
-    }
-
     private fun setCatListsObservers() {
         loadCatViewModel.catListInitial.observe(viewLifecycleOwner, {
             if (loadCatViewModel.flagInitial) {
@@ -152,17 +132,9 @@ class LoadCatFragment : Fragment() {
         )
     }
 
-    private fun showDialog(catDialog: CatDialog) {
-        activity?.supportFragmentManager.let {
-            if (it != null) {
-                catDialog.show(it, "dialog")
-            }
-        }
-    }
-
     private fun adapterSettings() {
-        setOnClicksListener(adapter)
         val layoutManager = GridLayoutManager(context, 2)
+        setOnClicksListener(adapter)
         binding.rvCatLoadList.layoutManager = layoutManager
         binding.rvCatLoadList.adapter = adapter
         loadCatViewModel.refreshView.observe(viewLifecycleOwner, Observer {
@@ -187,7 +159,6 @@ class LoadCatFragment : Fragment() {
             }
         })
     }
-
 
     private fun setOnClicksListener(adapter: CatListAdapter) {
 
