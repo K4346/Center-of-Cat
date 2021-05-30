@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.example.centerofcat.app.SingleLiveEvent
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.data.repositories.CatRepositoryImpl
 import com.example.centerofcat.domain.entities.CatInfo
@@ -19,18 +20,21 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
     var k = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val catRepositoryImpl: CatRepository = CatRepositoryImpl()
-    val analysisCatLiveData: MutableLiveData<List<AnalysisCat>> = MutableLiveData()
-    var messageLiveData: MutableLiveData<String> = MutableLiveData()
-    var flagToast: Boolean = false
-    var flagForClick: Boolean = false
-    val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
-    val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
+    val analysisCatLiveData: SingleLiveEvent<List<AnalysisCat>> =
+        SingleLiveEvent()
+    var messageLiveData: SingleLiveEvent<String> =
+        SingleLiveEvent()
+    val bundleForDetailLiveData: SingleLiveEvent<Bundle> =
+        SingleLiveEvent()
+    val dialogLiveData: SingleLiveEvent<CatDialog> =
+        SingleLiveEvent()
     val refreshView: MutableLiveData<Boolean> = MutableLiveData()
-    var catListInitial: MutableLiveData<List<CatInfo>> = MutableLiveData()
-    var catListRange: MutableLiveData<List<CatInfo>> = MutableLiveData()
-    var flagInitial: Boolean = false
-    var flagRange: Boolean = false
-    var flagRefresh: Boolean = true
+    val refreshPagedList: SingleLiveEvent<Boolean> =
+        SingleLiveEvent()
+    var catListInitial: SingleLiveEvent<List<CatInfo>> =
+        SingleLiveEvent()
+    var catListRange: SingleLiveEvent<List<CatInfo>> =
+        SingleLiveEvent()
 
     fun firstOn() {
         if (k == 0) {
@@ -79,24 +83,23 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-                changeToastFlag(true)
                 messageLiveData.value = "Кот загрузился"
-                refreshView.value = true
+                refreshPagedList.value = true
             }, {
-                changeToastFlag(true)
                 messageLiveData.value = "На фото нет кота"
             })
         compositeDisposable.add(disposable)
     }
+
 
     fun deleteCatInLoads(id: String) {
         val disposable = catRepositoryImpl.deleteLoadsCatObject(id).subscribeOn(
             Schedulers.io()
         )
             .observeOn(AndroidSchedulers.mainThread()).subscribe({
-                refreshView.value = true
+                refreshPagedList.value = true
             }, {
-                refreshView.value = true
+                refreshPagedList.value = true
             })
         compositeDisposable.add(disposable)
     }
@@ -114,8 +117,6 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
             ""
         )
         analysisToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        changeFlagForClick(true)
-        changeRefreshFlag(false)
         bundleForDetailLiveData.value = analysisToDetail
     }
 
@@ -124,30 +125,7 @@ class LoadCatViewModel(application: Application) : AndroidViewModel(application)
         loadCatViewModel: LoadCatViewModel,
         i: Int
     ) {
-        changeFlagForClick(true)
         dialogLiveData.value = CatDialog(catInfo, loadCatViewModel, i)
-    }
-
-    fun changeFlagForClick(flag: Boolean) {
-        flagForClick = flag
-    }
-
-    fun changeInitialFlag(flag: Boolean) {
-        flagInitial = flag
-    }
-
-    fun changeRangeFlag(flag: Boolean) {
-        flagRange = flag
-    }
-
-    fun changeRefreshFlag(flag: Boolean) {
-        flagRefresh = flag
-
-    }
-
-    fun changeToastFlag(flag: Boolean) {
-        flagToast = flag
-
     }
 
     override fun onCleared() {

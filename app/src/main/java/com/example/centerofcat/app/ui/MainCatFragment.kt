@@ -3,7 +3,6 @@ package com.example.centerofcat.app.ui
 import androidx.fragment.app.Fragment
 import androidx.paging.PagedList
 import androidx.paging.PositionalDataSource
-import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.app.App
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
 import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
@@ -11,8 +10,8 @@ import com.example.centerofcat.domain.entities.CatInfo
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
-open class MainCatFragment: Fragment() {
-
+open class MainCatFragment : Fragment() {
+    var pagedCat: PagedList<CatInfo>? = null
     lateinit var callBackInitial: PositionalDataSource.LoadInitialCallback<CatInfo>
     lateinit var callBackRange: PositionalDataSource.LoadRangeCallback<CatInfo>
 
@@ -35,14 +34,11 @@ open class MainCatFragment: Fragment() {
         return pagedList
     }
 
-     fun showDialog(catDialog: CatDialog) {
+    fun showDialog(catDialog: CatDialog) {
         activity?.supportFragmentManager.let {
             if (it != null) {
                 catDialog.show(it, "dialog")
             }
         }
     }
-
-
-
 }

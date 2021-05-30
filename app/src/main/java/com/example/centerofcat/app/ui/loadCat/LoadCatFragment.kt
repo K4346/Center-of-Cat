@@ -12,19 +12,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.paging.PagedList
 import androidx.paging.PositionalDataSource
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
-import com.example.centerofcat.app.App
-import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.MainCatFragment
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
-import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.databinding.FragmentLoadBinding
 import com.example.centerofcat.domain.entities.CatInfo
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -36,8 +31,6 @@ import java.io.File
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
-import javax.inject.Inject
 
 
 class LoadCatFragment : MainCatFragment() {
@@ -75,10 +68,7 @@ class LoadCatFragment : MainCatFragment() {
 
     private fun setMessageLiveData() {
         loadCatViewModel.messageLiveData.observe(viewLifecycleOwner, Observer {
-            if (loadCatViewModel.flagToast) {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                loadCatViewModel.changeToastFlag(false)
-            }
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         })
     }
 
@@ -95,7 +85,6 @@ class LoadCatFragment : MainCatFragment() {
             ) {
                 p = 0
                 callBackInitial = callback
-                loadCatViewModel.changeInitialFlag(true)
                 loadCatViewModel.loadCats(page = 0)
 
             }
@@ -103,7 +92,6 @@ class LoadCatFragment : MainCatFragment() {
             override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
                 p += 1
                 callBackRange = callback
-                loadCatViewModel.changeRangeFlag(true)
                 loadCatViewModel.loadCats(page = p)
             }
         }
@@ -112,16 +100,10 @@ class LoadCatFragment : MainCatFragment() {
 
     private fun setCatListsObservers() {
         loadCatViewModel.catListInitial.observe(viewLifecycleOwner, {
-            if (loadCatViewModel.flagInitial) {
-                callBackInitial.onResult(it, 0)
-                loadCatViewModel.changeInitialFlag(false)
-            }
+            callBackInitial.onResult(it, 0)
         })
         loadCatViewModel.catListRange.observe(viewLifecycleOwner, {
-            if (loadCatViewModel.flagRange) {
-                callBackRange.onResult(it)
-                loadCatViewModel.changeRangeFlag(false)
-            }
+            callBackRange.onResult(it)
         })
     }
 
@@ -135,40 +117,40 @@ class LoadCatFragment : MainCatFragment() {
     private fun adapterSettings() {
         val layoutManager = GridLayoutManager(context, 2)
         setOnClicksListener(adapter)
+        refreshListForChange(adapter)
         binding.rvCatLoadList.layoutManager = layoutManager
         binding.rvCatLoadList.adapter = adapter
         loadCatViewModel.refreshView.observe(viewLifecycleOwner, Observer {
-            if (loadCatViewModel.flagRefresh) {
-                adapter.submitList(makeChange(makeDataSource()))
-                loadCatViewModel.changeRefreshFlag(false)
+            if (pagedCat == null) {
+                pagedCat = makeChange(makeDataSource())
             }
+            adapter.submitList(pagedCat)
+        })
+    }
+
+    private fun refreshListForChange(adapter: CatListAdapter) {
+        loadCatViewModel.refreshPagedList.observe(viewLifecycleOwner, {
+            pagedCat = makeChange(makeDataSource())
+            adapter.submitList(pagedCat)
         })
     }
 
     private fun setClickObservers() {
         loadCatViewModel.bundleForDetailLiveData.observe(viewLifecycleOwner, {
-            if (loadCatViewModel.flagForClick) {
-                goToDetailFragment(it)
-                loadCatViewModel.changeFlagForClick(false)
-            }
+            goToDetailFragment(it)
         })
         loadCatViewModel.dialogLiveData.observe(viewLifecycleOwner, {
-            if (loadCatViewModel.flagForClick) {
-                showDialog(it)
-                loadCatViewModel.changeFlagForClick(false)
-            }
+            showDialog(it)
         })
     }
 
     private fun setOnClicksListener(adapter: CatListAdapter) {
-
         adapter.onCatClickListener = object : CatListAdapter.OnCatClickListener {
             override fun onCatClick(catInfo: CatInfo) {
                 loadCatViewModel.analysisCat(catInfo.id)
                 loadCatViewModel.analysisCatLiveData.observe(viewLifecycleOwner, Observer
                 { it1 ->
                     loadCatViewModel.onCatClick(catInfo, it1)
-
                 })
             }
 

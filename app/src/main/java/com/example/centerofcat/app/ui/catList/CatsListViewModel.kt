@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.example.centerofcat.app.SingleLiveEvent
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.data.repositories.CatRepositoryImpl
 import com.example.centerofcat.domain.entities.CatInfo
@@ -14,15 +15,17 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class CatsListViewModel(application: Application) : AndroidViewModel(application) {
-    val bundleForDetailLiveData: MutableLiveData<Bundle> = MutableLiveData()
-    val dialogLiveData: MutableLiveData<CatDialog> = MutableLiveData()
+    val bundleForDetailLiveData: SingleLiveEvent<Bundle> =
+        SingleLiveEvent()
+    val dialogLiveData: SingleLiveEvent<CatDialog> =
+        SingleLiveEvent()
     val refreshView: MutableLiveData<Boolean> = MutableLiveData()
-    var catListInitial: MutableLiveData<List<CatInfo>> = MutableLiveData()
-    var catListRange: MutableLiveData<List<CatInfo>> = MutableLiveData()
-    var flagInitial: Boolean = false
-    var flagRange: Boolean = false
-    var flagRefresh: Boolean = true
-    var flagForClick: Boolean = false
+    val refreshPagedList: SingleLiveEvent<Boolean> =
+        SingleLiveEvent()
+    var catListInitial: SingleLiveEvent<List<CatInfo>> =
+        SingleLiveEvent()
+    var catListRange: SingleLiveEvent<List<CatInfo>> =
+        SingleLiveEvent()
 
     private var k = 0
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -83,7 +86,6 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         compositeDisposable.add(disposable)
     }
 
-
     fun loadBreedsCats(
     ) {
         if (allArray == ArrayList<ArrayList<String>>()) {
@@ -107,6 +109,10 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun refreshPagedList() {
+        refreshPagedList.value = true
+    }
+
     fun addCatInFavourites(id: String) {
         val favouriteEntity = FavouriteEntity(image_id = id)
         val disposable = catRepositoryImpl
@@ -122,7 +128,6 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         val idToDetail = Bundle()
         val infoAboutCat = arrayListOf<String>(catInfo.url, catInfo.id, "")
         idToDetail.putStringArrayList("infoAboutCat", infoAboutCat)
-        changeFlagForClick(true)
         bundleForDetailLiveData.value = idToDetail
     }
 
@@ -131,25 +136,7 @@ class CatsListViewModel(application: Application) : AndroidViewModel(application
         catsListViewModel: CatsListViewModel,
         i: Int
     ) {
-        changeFlagForClick(true)
         dialogLiveData.value = CatDialog(catInfo, catsListViewModel, i)
-    }
-
-    fun changeFlagForClick(flag: Boolean) {
-        flagForClick = flag
-    }
-
-    fun changeInitialFlag(flag: Boolean) {
-        flagInitial = flag
-    }
-
-    fun changeRangeFlag(flag: Boolean) {
-        flagRange = flag
-    }
-
-    fun changeRefreshFlag(flag: Boolean) {
-        flagRefresh = flag
-
     }
 
     override fun onCleared() {

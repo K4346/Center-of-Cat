@@ -1,35 +1,27 @@
 package com.example.centerofcat.app.ui.catList
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.paging.PagedList
 import androidx.paging.PositionalDataSource
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.centerofcat.R
-import com.example.centerofcat.app.App
-import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.app.ui.MainCatFragment
 import com.example.centerofcat.app.ui.adapters.CatListAdapter
-import com.example.centerofcat.app.ui.adapters.MainThreadExecutor
 import com.example.centerofcat.databinding.FragmentCatListBinding
 import com.example.centerofcat.domain.entities.CatInfo
-import java.util.concurrent.Executors
-import javax.inject.Inject
 
 
 class CatsListFragment : MainCatFragment() {
     private lateinit var catsListViewModel: CatsListViewModel
     private lateinit var binding: FragmentCatListBinding
-
+    private var waitCallback: Boolean = true
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,14 +51,12 @@ class CatsListFragment : MainCatFragment() {
             ) {
                 p = 0
                 callBackInitial = callback
-                catsListViewModel.changeInitialFlag(true)
                 catsListViewModel.loadCats(page = 0)
             }
 
             override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback<CatInfo>) {
                 p += 1
                 callBackRange = callback
-                catsListViewModel.changeRangeFlag(true)
                 catsListViewModel.loadCats(page = p)
             }
         }
@@ -75,31 +65,20 @@ class CatsListFragment : MainCatFragment() {
 
     private fun setCatListsObservers() {
         catsListViewModel.catListInitial.observe(viewLifecycleOwner, {
-            if (catsListViewModel.flagInitial) {
-                callBackInitial.onResult(it, 0)
-                catsListViewModel.changeInitialFlag(false)
-            }
+            callBackInitial.onResult(it, 0)
+            waitCallback = true
         })
         catsListViewModel.catListRange.observe(viewLifecycleOwner, {
-            if (catsListViewModel.flagRange) {
-                callBackRange.onResult(it)
-                catsListViewModel.changeRangeFlag(false)
-            }
+            callBackRange.onResult(it)
         })
     }
 
     private fun setClickObservers() {
         catsListViewModel.bundleForDetailLiveData.observe(viewLifecycleOwner, {
-            if (catsListViewModel.flagForClick) {
-                goToDetailFragment(it)
-                catsListViewModel.changeFlagForClick(false)
-            }
+            goToDetailFragment(it)
         })
         catsListViewModel.dialogLiveData.observe(viewLifecycleOwner, {
-            if (catsListViewModel.flagForClick) {
-                showDialog(it)
-                catsListViewModel.changeFlagForClick(false)
-            }
+            showDialog(it)
         })
     }
 
@@ -107,13 +86,14 @@ class CatsListFragment : MainCatFragment() {
         val layoutManager = GridLayoutManager(context, 2)
         binding.rvCatList.layoutManager = layoutManager
         setOnClicksListeners(adapter)
+        refreshListForChange(adapter)
         binding.rvCatList.adapter = adapter
         addFilters()
         catsListViewModel.refreshView.observe(viewLifecycleOwner, Observer {
-            if (catsListViewModel.flagRefresh) {
-                adapter.submitList(makeChange(makeDataSource()))
-                catsListViewModel.changeRefreshFlag(false)
+            if (pagedCat == null) {
+                pagedCat = makeChange(makeDataSource())
             }
+            adapter.submitList(pagedCat)
         })
     }
 
@@ -128,7 +108,6 @@ class CatsListFragment : MainCatFragment() {
             }
         }
     }
-
 
     private fun goToDetailFragment(bundle: Bundle) {
         findNavController().navigate(
@@ -177,6 +156,13 @@ class CatsListFragment : MainCatFragment() {
         }
     }
 
+    private fun refreshListForChange(adapter: CatListAdapter) {
+        catsListViewModel.refreshPagedList.observe(viewLifecycleOwner, {
+            pagedCat = makeChange(makeDataSource())
+            adapter.submitList(pagedCat)
+        })
+    }
+
     private fun addBreedsAdapter() {
         var f1 = 0
         val spinnerAdapter = spinnerAdapterMake(1)
@@ -188,15 +174,15 @@ class CatsListFragment : MainCatFragment() {
         })
         spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerOfBreed.adapter = spinnerAdapter
+        binding.spinnerOfBreed.setSelection(0, false)
         binding.spinnerOfBreed.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.breedChoose = catsListViewModel.idsCats[p2]
-                    if (f1 != 0) {
-                        catsListViewModel.changeRefreshFlag(true)
-                        catsListViewModel.refreshView.value = true
+                    if (waitCallback) {
+                        waitCallback = false
+                        catsListViewModel.refreshPagedList()
                     }
-                    f1 = 1
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -206,19 +192,18 @@ class CatsListFragment : MainCatFragment() {
     }
 
     private fun addCategoriesAdapter() {
-        var f2 = 0
         val spinnerCategoryAdapter = spinnerAdapterMake(2)
         spinnerCategoryAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerOfCategories.adapter = spinnerCategoryAdapter
+        binding.spinnerOfCategories.setSelection(0, false)
         binding.spinnerOfCategories.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.categoryy = catsListViewModel.categoriesIdCats[p2]
-                    if (f2 != 0) {
-                        catsListViewModel.changeRefreshFlag(true)
-                        catsListViewModel.refreshView.value = true
+                    if (waitCallback) {
+                        waitCallback = false
+                        catsListViewModel.refreshPagedList()
                     }
-                    f2 = 1
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -228,19 +213,18 @@ class CatsListFragment : MainCatFragment() {
     }
 
     private fun addOrderAdapter() {
-        var f3 = 0
         val spinnerOrderAdapter = spinnerAdapterMake(3)
         spinnerOrderAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerOfOrder.adapter = spinnerOrderAdapter
+        binding.spinnerOfOrder.setSelection(0, false)
         binding.spinnerOfOrder.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                     catsListViewModel.orderr = catsListViewModel.order[p2]
-                    if (f3 != 0) {
-                        catsListViewModel.changeRefreshFlag(true)
-                        catsListViewModel.refreshView.value = true
+                    if (waitCallback) {
+                        waitCallback = false
+                        catsListViewModel.refreshPagedList()
                     }
-                    f3 = 1
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
