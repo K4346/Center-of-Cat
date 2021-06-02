@@ -90,10 +90,10 @@ class CatsListFragment : MainCatFragment() {
         binding.rvCatList.adapter = adapter
         addFilters()
         catsListViewModel.refreshView.observe(viewLifecycleOwner, Observer {
-            if (pagedCat == null) {
-                pagedCat = makeChange(makeDataSource())
+            if (catsListViewModel.pagedCat == null) {
+                catsListViewModel.pagedCat = makeChange(makeDataSource())
             }
-            adapter.submitList(pagedCat)
+            adapter.submitList(catsListViewModel.pagedCat)
         })
     }
 
@@ -158,8 +158,8 @@ class CatsListFragment : MainCatFragment() {
 
     private fun refreshListForChange(adapter: CatListAdapter) {
         catsListViewModel.refreshPagedList.observe(viewLifecycleOwner, {
-            pagedCat = makeChange(makeDataSource())
-            adapter.submitList(pagedCat)
+            catsListViewModel.pagedCat = makeChange(makeDataSource())
+            adapter.submitList(catsListViewModel.pagedCat)
         })
     }
 

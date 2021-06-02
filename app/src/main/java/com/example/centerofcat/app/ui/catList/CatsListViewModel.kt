@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagedList
 import com.example.centerofcat.app.SingleLiveEvent
 import com.example.centerofcat.app.ui.CatDialog
 import com.example.centerofcat.data.repositories.CatRepositoryImpl
@@ -15,6 +16,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class CatsListViewModel(application: Application) : AndroidViewModel(application) {
+    var pagedCat: PagedList<CatInfo>? = null
     val bundleForDetailLiveData: SingleLiveEvent<Bundle> =
         SingleLiveEvent()
     val dialogLiveData: SingleLiveEvent<CatDialog> =

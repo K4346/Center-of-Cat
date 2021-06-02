@@ -82,17 +82,17 @@ class FavouritesCatsFragment : MainCatFragment() {
         binding.rvCatFavouritesList.layoutManager = layoutManager
         binding.rvCatFavouritesList.adapter = adapter
         catsFavouritesCatsViewModel.refreshView.observe(viewLifecycleOwner, Observer {
-            if (pagedCat == null) {
-                pagedCat = makeChange(makeDataSource())
+            if (catsFavouritesCatsViewModel.pagedCat == null) {
+                catsFavouritesCatsViewModel.pagedCat = makeChange(makeDataSource())
             }
-            adapter.submitList(pagedCat)
+            adapter.submitList(catsFavouritesCatsViewModel.pagedCat)
         })
     }
 
     private fun refreshListForChange(adapter: CatListAdapter) {
         catsFavouritesCatsViewModel.refreshPagedList.observe(viewLifecycleOwner, {
-            pagedCat = makeChange(makeDataSource())
-            adapter.submitList(pagedCat)
+            catsFavouritesCatsViewModel.pagedCat = makeChange(makeDataSource())
+            adapter.submitList(catsFavouritesCatsViewModel.pagedCat)
         })
     }
 

@@ -11,7 +11,7 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 
 open class MainCatFragment : Fragment() {
-    var pagedCat: PagedList<CatInfo>? = null
+//    var pagedCat: PagedList<CatInfo>? = null
     lateinit var callBackInitial: PositionalDataSource.LoadInitialCallback<CatInfo>
     lateinit var callBackRange: PositionalDataSource.LoadRangeCallback<CatInfo>
 

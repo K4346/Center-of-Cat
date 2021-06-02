@@ -34,7 +34,7 @@ import java.util.*
 
 
 class LoadCatFragment : MainCatFragment() {
-    var uriCat: Uri? = null
+    private var uriCat: Uri? = null
     private lateinit var loadCatViewModel: LoadCatViewModel
     private lateinit var binding: FragmentLoadBinding
 
@@ -121,17 +121,17 @@ class LoadCatFragment : MainCatFragment() {
         binding.rvCatLoadList.layoutManager = layoutManager
         binding.rvCatLoadList.adapter = adapter
         loadCatViewModel.refreshView.observe(viewLifecycleOwner, Observer {
-            if (pagedCat == null) {
-                pagedCat = makeChange(makeDataSource())
+            if (loadCatViewModel.pagedCat == null) {
+                loadCatViewModel.pagedCat = makeChange(makeDataSource())
             }
-            adapter.submitList(pagedCat)
+            adapter.submitList(loadCatViewModel.pagedCat)
         })
     }
 
     private fun refreshListForChange(adapter: CatListAdapter) {
         loadCatViewModel.refreshPagedList.observe(viewLifecycleOwner, {
-            pagedCat = makeChange(makeDataSource())
-            adapter.submitList(pagedCat)
+            loadCatViewModel.pagedCat = makeChange(makeDataSource())
+            adapter.submitList(loadCatViewModel.pagedCat)
         })
     }
 
