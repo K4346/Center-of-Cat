@@ -1,17 +1,31 @@
 package com.example.centerofcat
 
+import android.app.Application
+import com.example.centerofcat.app.ui.catList.CatsListViewModel
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import org.junit.Assert.*
-
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class ExampleUnitTest {
+    private val app = Application()
+    private val catsListViewModel = CatsListViewModel(app)
+    private val order = arrayOf("", "ASC", "DESC", "RAND")
+    private val categoriesCats = arrayListOf<String>(
+        "",
+        "boxes",
+        "clothes",
+        "hats",
+        "sinks",
+        "space",
+        "sunglasses",
+        "ties"
+    )
+    private val categoriesIdCats = arrayListOf<String>("", "5", "15", "1", "14", "2", "4", "7")
+
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun spinnersContent_isCorrect() {
+        assertArrayEquals(catsListViewModel.order, order)
+        assertEquals(catsListViewModel.categoriesCats, categoriesCats)
+        assertEquals(catsListViewModel.categoriesIdCats, categoriesIdCats)
     }
 }
