@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PositionalDataSource
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,7 +17,7 @@ import com.example.centerofcat.domain.entities.CatInfo
 
 class FavouritesCatsFragment : MainCatFragment() {
 
-    private lateinit var catsFavouritesCatsViewModel: FavouritesCatsViewModel
+    private val catsFavouritesCatsViewModel: FavouritesCatsViewModel by viewModels()
     private lateinit var binding: FragmentFavoritesBinding
 
     override fun onCreateView(
@@ -32,8 +32,6 @@ class FavouritesCatsFragment : MainCatFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         actionBarSetText()
-        catsFavouritesCatsViewModel =
-            ViewModelProvider(this).get(FavouritesCatsViewModel::class.java)
         app.component.injectAdapter(this)
         setCatListsObservers()
         catsFavouritesCatsViewModel.firstOn()

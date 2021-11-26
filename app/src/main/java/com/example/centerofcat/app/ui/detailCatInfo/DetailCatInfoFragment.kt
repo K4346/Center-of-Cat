@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.centerofcat.databinding.FragmentDetalCatFragmentBinding
 
 class DetailCatInfoFragment() : Fragment() {
-
+    private val detailViewModel: DetailViewModel by viewModels()
     private lateinit var binding: FragmentDetalCatFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,14 +24,12 @@ class DetailCatInfoFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val detailViewModel =
-            ViewModelProvider(this).get(DetailViewModel::class.java)
-        setInfoAboutCat(detailViewModel)
+        setInfoAboutCat()
         setAnalysis()
 
     }
 
-    private fun setInfoAboutCat(detailViewModel: DetailViewModel) {
+    private fun setInfoAboutCat() {
         val detailInformation = requireArguments().getStringArrayList("infoAboutCat")
         Glide.with(binding.root.context).load(detailInformation?.get(0)).centerCrop()
             .into(binding.detailPhoto)

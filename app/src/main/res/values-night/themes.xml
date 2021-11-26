@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.CenterOfCat" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/orange_700</item>
+        <item name="colorPrimary">#B64900</item>
+        <item name="colorPrimaryVariant">#E8782E</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>

@@ -12,8 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PositionalDataSource
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,7 +35,7 @@ import java.util.*
 
 class LoadCatFragment : MainCatFragment() {
     private var uriCat: Uri? = null
-    private lateinit var loadCatViewModel: LoadCatViewModel
+    private val loadCatViewModel: LoadCatViewModel by viewModels()
     private lateinit var binding: FragmentLoadBinding
 
     override fun onCreateView(
@@ -43,8 +43,6 @@ class LoadCatFragment : MainCatFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        loadCatViewModel =
-            ViewModelProvider(this).get(LoadCatViewModel::class.java)
         binding = FragmentLoadBinding.inflate(inflater, container, false)
         return binding.root
     }

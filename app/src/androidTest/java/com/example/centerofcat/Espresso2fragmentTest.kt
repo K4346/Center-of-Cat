@@ -1,5 +1,8 @@
 package com.example.centerofcat
 
+import androidx.fragment.app.testing.launchFragmentInContainer
+import com.example.centerofcat.app.ui.catFavourites.FavouritesCatsFragment
+
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -14,20 +17,16 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class EspressoTest {
+class Espresso2fragmentTest {
     @get:Rule
     var activityTestRule: ActivityTestRule<MainActivity> = ActivityTestRule(
         MainActivity::class.java
     )
 
     @Test
-    fun checkFirstScreenElementsDisplayed() {
-        onView(withId(R.id.cats_activity)).check(matches(isDisplayed()))
-        onView(withId(R.id.action_bar_tab)).check(matches(withText("Котики")))
-        onView(withId(R.id.rvCatList)).check(matches(isDisplayed()))
-        onView(withId(R.id.spinnerOfBreed)).check(matches(isDisplayed()))
-        onView(withId(R.id.spinnerOfCategories)).check(matches(isDisplayed()))
-        onView(withId(R.id.spinnerOfOrder)).check(matches(isDisplayed()))
+    fun check1FirstScreenElementsDisplayed() {
+        launchFragmentInContainer<FavouritesCatsFragment>()
+        onView(withId(R.id.action_bar_tab)).check(matches(withText("Избранное")))
     }
 
 

@@ -6,7 +6,7 @@ import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class ExampleUnitTest {
+class UnitTest {
     private val app = Application()
     private val catsListViewModel = CatsListViewModel(app)
     private val order = arrayOf("", "ASC", "DESC", "RAND")
